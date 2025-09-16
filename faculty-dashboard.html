@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Dashboard</title>
+    <style>
+        /* --- General & Layout --- */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* --- Sidebar --- */
+        .sidebar {
+            width: 220px;
+            background-color: #005e53;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 1rem;
+            flex-shrink: 0;
+        }
+
+        .sidebar .profile-pic {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            background-image: url('https://via.placeholder.com/100'); /* Placeholder image */
+            background-size: cover;
+            background-position: center;
+            border: 3px solid #007367;
+        }
+
+        .sidebar h3 {
+            margin-bottom: 2rem;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            width: 100%;
+        }
+
+        .nav-links li {
+            margin: 0.5rem 0;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #fff;
+            font-size: 1rem;
+            padding: 0.8rem 1rem;
+            border-radius: 6px;
+            display: block;
+            transition: background-color 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background-color: #007367;
+        }
+
+        /* --- Main Content --- */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .content-header {
+            margin-bottom: 2rem;
+        }
+
+        .content-header h1 {
+            font-size: 2rem;
+            color: #333;
+        }
+        
+        /* --- Profile Card (Dashboard) --- */
+        .profile-card {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1.5rem;
+        }
+
+        .profile-header h2 {
+            color: #007367;
+            margin: 0;
+        }
+
+        .profile-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .detail-item {
+            font-size: 1rem;
+        }
+
+        .detail-item strong {
+            display: block;
+            color: #555;
+            margin-bottom: 0.3rem;
+        }
+        
+        /* --- Events Table --- */
+        .events-table {
+            width: 100%;
+            background: #fff;
+            border-collapse: collapse;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .events-table th, .events-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .events-table th {
+            background-color: #fafafa;
+            font-weight: 600;
+            color: #555;
+        }
+
+        /* --- Form Container (for Add/Edit/Settings) --- */
+        .form-container {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 550px;
+            margin: 2rem auto;
+        }
+
+        .form-container h2 {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            text-align: center;
+            color: #007367;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.7rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+            box-sizing: border-box;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: #007367;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        /* --- Buttons --- */
+        .btn {
+            padding: 0.8rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: #007367;
+            color: #fff;
+            flex: 1;
+        }
+        
+        .btn-primary:hover {
+            background-color: #005e53;
+        }
+
+        .btn-secondary {
+            background-color: #e0e0e0;
+            color: #333;
+            flex: 1;
+        }
+
+        .btn-secondary:hover {
+            background-color: #c8c8c8;
+        }
+        
+        .btn-edit-profile {
+            background-color: #007367;
+            color: #fff;
+            padding: 0.6rem 1.2rem;
+        }
+
+        .btn-edit-profile:hover {
+             background-color: #005e53;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-around;
+                align-items: center;
+                padding: 0.5rem;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
+            .profile-pic, .sidebar h3 {
+                display: none;
+            }
+            .main-content {
+                padding: 1rem;
+            }
+            .content-header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div>
+            <div class="profile-pic"></div>
+            <h3>Faculty Name</h3>
+        </div>
+        <ul class="nav-links">
+            <li><a id="profile-link" href="#" class="active">Profile</a></li>
+            <li><a id="events-link" href="#">Events</a></li>
+           <li><a id="logout" href="#">Logout</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+
+        <section id="profile-section">
+
+            <div class="profile-card">
+                <div class="profile-header">
+                    <h2>Faculty Profile Information</h2>
+                <!-- <a id="edit-profile-link" href="#" class="btn btn-edit-profile">Edit Profile</a>-->   
+                </div>
+             <div class="profile-details">
+    <div class="detail-item" style="grid-column: 1 / -1; text-align:center;">
+        <img id="profile-pic-main" src="https://via.placeholder.com/120" alt="Profile Picture" style="width:120px;height:120px;border-radius:50%;border:3px solid #007367;object-fit:cover;">
+    </div>
+    <div class="detail-item"><strong>Full Name</strong><span id="faculty-name-display"></span></div>
+    <div class="detail-item"><strong>Faculty ID</strong><span id="faculty-id-display"></span></div>
+    <div class="detail-item"><strong>Gender</strong><span id="faculty-gender-display"></span></div>
+    <div class="detail-item"><strong>School</strong><span id="faculty-school-display"></span></div>
+    <div class="detail-item"><strong>Department</strong><span id="faculty-department-display"></span></div>
+    <div class="detail-item"><strong>Email</strong><span id="faculty-email-display"></span></div>
+</div>
+            </div>
+        </section>
+
+      <section id="events-section" class="hidden">
+            <div class="content-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <h1>My Events</h1>
+                <a id="add-event-link" href="#" class="btn btn-primary" style="flex: 0;">+ Add New Event</a>
+            </div>
+            <table class="events-table">
+                <thead>
+                    <tr>
+                        <th>Event Title</th>
+                        <th>Type</th>
+                        <th>From Date</th>
+                        <th>To Date</th>
+                        <th>Participants</th>
+                        <th>Organized/Attended</th>
+                        <th>Attachments</th>
+                    </tr>
+                </thead>
+                <tbody id="events-table-body">
+                    </tbody>
+            </table>
+        </section>
+
+
+        <section id="edit-profile-section" class="hidden">
+            <div class="form-container">
+                <h2>Edit Faculty Profile</h2>
+                <form id="edit-profile-form">
+                    <div class="form-group"><label for="profilePic">Upload Profile Picture</label><input type="file" id="profilePic" accept="image/*"></div>
+                    <div class="form-group"><label for="firstName">Full Name</label><input type="text" id="firstName" required></div>
+                    <div class="form-group"><label for="gender">Gender</label><select id="gender" required><option>Male</option><option>Female</option><option>Other</option></select></div>
+                    <div class="form-group"><label for="school">School</label><select id="school" required><option>GITAM School of Technology</option><option>GITAM School of Sciences</option></select></div>
+                    <div class="form-group"><label for="department">Department Name</label><input type="text" id="department" required></div>
+                    <div class="form-group"><label for="facultyId">Faculty ID</label><input type="text" id="facultyId" readonly></div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="reset" class="btn btn-secondary">Reset</button>
+                    </div>
+                  </form>
+            </div>
+        </section>
+
+        <section id="settings-section" class="hidden">
+            <div class="form-container">
+                <h2>Faculty Settings</h2>
+                <form onsubmit="alert('Settings Saved!'); return false;">
+                  <div class="form-group"><label for="email">Update Email</label><input type="email" id="email" name="email" placeholder="Enter new email"></div>
+                  <div class="form-group"><label for="password">Change Password</label><input type="password" id="password" name="password" placeholder="Enter new password"></div>
+                  <div class="form-group"><label for="confirmPassword">Confirm Password</label><input type="password" id="confirmPassword" name="confirmPassword" placeholder="Re-enter new password"></div>
+                  <div class="form-group"><label for="notifications">Notification Preferences</label><select id="notifications" name="notifications"><option value="all">All Notifications</option><option value="important">Only Important</option><option value="none">Do Not Disturb</option></select></div>
+                  <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="reset" class="btn btn-secondary">Reset</button>
+                  </div>
+                </form>
+            </div> </section>
+            <section id="add-event-section" class="hidden">
+    <div class="form-container">
+        <h2>Add New Faculty Event</h2>
+        <form id="add-event-form">
+            <div class="form-group">
+                <label for="eventRole">Event Role</label>
+                <select id="eventRole" required>
+                    <option value="" disabled selected>Select Role</option>
+                    <option>Organized</option>
+                    <option>Attended</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="eventType">Type of Event</label>
+                <select id="eventType" required>
+                    <option value="" disabled selected>Select type</option>
+                    <option>Workshop</option>
+                    <option>Seminar</option>
+                    <option>FDP</option>
+                    <option>STP</option>
+                    <option>Competition</option>
+                    <option>Guest Lecture</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="eventTitle">Title of Event</label>
+                <input type="text" id="eventTitle" placeholder="e.g., Workshop on AI" required>
+            </div>
+            <div class="form-group">
+                <label for="fromDate">From Date</label>
+                <input type="date" id="fromDate" required>
+            </div>
+            <div class="form-group">
+                <label for="toDate">To Date</label>
+                <input type="date" id="toDate" required>
+            </div>
+            <div class="form-group">
+                <label for="participants">No. of Participants</label>
+                <input type="number" id="participants" min="1" placeholder="e.g., 50" required>
+            </div>
+            <div class="form-group">
+                <label for="photos">Upload Photos/Documents</label>
+                <input type="file" id="photos" accept="image/*,.pdf" multiple>
+            </div>
+            <div class="form-group">
+                <label for="remarks">Event Output / Remarks</label>
+                <textarea id="remarks" placeholder="Briefly describe the outcome of the event..."></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Submit Event</button>
+                <button type="reset" class="btn btn-secondary">Clear</button>
+            </div>
+        </form>
+    </div>
+        </section>
+    </main>
+    <script src="js/supabaseClient.js" type="module"></script>
+    <script src="js/faculty.js" type="module"></script>
+</body>
+</html>

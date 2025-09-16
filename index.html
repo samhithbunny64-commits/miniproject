@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Event Organizer | Login & Signup</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo">
+        <img src="/assests/id6lK_MFde_logos.jpeg" alt="University Logo">
+        <h1>GITAM Events Portal</h1>
+      </div>
+      <p>Access Faculty and Department Events</p>
+    </header>
+
+    <main>
+      <div class="toggle-container">
+        <button class="toggle-btn" id="faculty-toggle">Faculty Login</button>
+        <button class="toggle-btn" id="department-toggle">Department Login</button>
+        <button class="toggle-btn" id="admin-toggle">Admin Login</button>
+      </div>
+
+     <form id="faculty-login-form" class="form-container hidden">
+  <label>Faculty ID</label>
+  <input type="text" id="faculty-id" required />
+  <label>Password</label>
+  <div class="password-container">
+    <input type="password" id="faculty-password" required />
+    <span class="toggle-password">👁️</span>
+  </div>
+  <button type="submit" class="login-btn">Login</button>
+  <p class="signup-link">No account? <a href="#" id="show-signup">Sign up</a></p> 
+</form>
+
+<form id="department-login-form" class="form-container hidden">
+  <label>Department Email</label>
+  <input type="email" id="department-email" required />
+  <label>Security Pin</label>
+  <div class="password-container">
+    <input type="password" id="department-pin" required />
+    <span class="toggle-password">👁️</span>
+  </div>
+  <button type="submit" class="login-btn">Login</button>
+</form>
+
+<form id="admin-login-form" class="form-container hidden">
+  <label>Admin Username</label>
+  <input type="text" id="admin-username" required />
+  <label>Password</label>
+  <div class="password-container">
+    <input type="password" id="admin-password" required />
+    <span class="toggle-password">👁️</span>
+  </div>
+ <button type="submit" class="login-btn">Login</button>
+</form>
+
+  <form id="signup-form" class="form-container hidden">
+        <h2>Faculty Registration</h2>
+        <label>Full Name</label>
+        <input type="text" id="signup-name" required />
+        <label>Faculty ID</label>
+        <input type="text" id="signup-facultyId" required />
+        <label>Mobile Number</label>
+        <input type="text" id="signup-mobile" required />
+        <label>Email</label>
+        <input type="email" id="signup-email" required />
+        <label>Password</label>
+        <div class="password-container">
+          <input type="password" id="signup-password" required />
+          <span class="toggle-password">👁️</span>
+        </div>
+        <label>Confirm Password</label>
+        <div class="password-container">
+          <input type="password" id="signup-confirm" required />
+          <span class="toggle-password">👁️</span>
+        </div>
+
+        <div class="form-group"><label for="signup-profilePic">Upload Profile Picture</label><input type="file" id="signup-profilePic" accept="image/*"></div>
+        <div class="form-group"><label for="signup-gender">Gender </label><select id="signup-gender" required><option value="" disabled selected>Select Gender</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+        <div class="form-group"><label for="signup-school">School </label><select id="signup-school" required><option value="" disabled selected>Select School</option><option>GITAM School of Technology</option><option>GITAM School of Science</option><option>GITAM School of Business</option><option>GITAM School of Law</option><option>GITAM School of Pharmacy</option><option>GITAM School of Architecture</option><option>GITAM Institute of Medical Science & Research (GIMSR)</option></select></div>
+        <div class="form-group"><label for="signup-department">Department Name </label><input type="text" id="signup-department" required></div>
+        <button type="submit" class="login-btn">Register</button>
+        <p class="signup-link">Already have an account? <a href="#" id="show-login">Login</a></p>
+      </form>
+      <form id="faculty-forgot-form" class="form-container hidden">
+    <h2>Faculty Forgot Password</h2>
+    <label>Faculty ID</label>
+    <input type="text" id="faculty-forgot-id" required />
+    <label>Email</label>
+    <input type="email" id="faculty-forgot-email" required />
+    <button type="submit" class="login-btn">Reset Password</button>
+    <p class="signup-link"><a href="#" id="back-to-faculty-login">Back to Login</a></p>
+  </form>
+
+  <form id="department-forgot-form" class="form-container hidden">
+    <h2>Department Forgot Pin</h2>
+    <label>Department Email</label>
+    <input type="email" id="department-forgot-email" required />
+    <button type="submit" class="login-btn">Reset Pin</button>
+    <p class="signup-link"><a href="#" id="back-to-department-login">Back to Login</a></p>
+  </form>
+
+  <form id="admin-forgot-form" class="form-container hidden">
+    <h2>Admin Forgot Password</h2>
+    <label>Admin Username</label>
+    <input type="text" id="admin-forgot-username" required />
+    <label>Email</label>
+    <input type="email" id="admin-forgot-email" required />
+    <button type="submit" class="login-btn">Reset Password</button>
+    <p class="signup-link"><a href="#" id="back-to-admin-login">Back to Login</a></p>
+  </form>
+</main>
+    </main>
+  </div>
+
+  <script src="js/auth.js" type="module"></script>
+  <style>
+    .password-container {
+        position: relative;
+    }
+    .password-container input {
+        padding-right: 35px; /* Make space for the icon */
+    }
+    .toggle-password {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        user-select: none;
+    }
+  </style>
+</body>
+</html>

@@ -1,0 +1,144 @@
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: #FFFFFF;
+  color: #007366;
+}
+
+/* Container */
+.container {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.header .logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.header .logo img {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+}
+
+/* Toggle Buttons */
+.toggle-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.toggle-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: #F0E0C1;
+  cursor: pointer;
+}
+.toggle-btn.active {
+  background: #007366;
+  color: #ffffff;
+}
+
+/* Forms */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.form-container.hidden {
+  display: none;
+}
+label {
+  font-size: 14px;
+  font-weight: bold;
+}
+input, select, textarea {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+button, .login-btn {
+  background: #007366;
+  color: #000000;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+button:hover, .login-btn:hover {
+  background: #016055;
+}
+.forgot {
+  font-size: 12px;
+  text-align: right;
+  display: block;
+}
+
+/* Dashboard Layout */
+.dashboard {
+  display: flex;
+  min-height: 100vh;
+}
+.sidebar {
+  width: 220px;
+  background: #007366;
+  color: #fff;
+  padding: 20px;
+}
+.sidebar h2 {
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+.sidebar ul {
+  list-style: none;
+}
+.sidebar ul li {
+  margin: 15px 0;
+}
+.sidebar ul li a {
+  color: #fff;
+  text-decoration: none;
+}
+.sidebar ul li a:hover {
+  text-decoration: underline;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+}
+.main-content h2 {
+  margin-bottom: 15px;
+  color: #007366;
+}
+.hidden {
+  display: none;
+}
+
+/* Lists */
+ul {
+  list-style: none;
+}
+ul li {
+  background: #FFFFFF;
+  margin: 6px 0;
+  padding: 10px;
+  border-radius: 4px;
+}
