@@ -4,14 +4,23 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Dashboard</title>
-  <style>
+<style>/* --- COLOR PALETTE --- */
     :root {
-      --primary-color: #004d40;
-      --secondary-color: #00796b;
-      --bg-light: #e0f2f1;
-      --text-dark: #263238;
-      --text-light: #cfd8dc;
-      --border-color: #b2dfdb;
+      --color-primary: #007366;           /* Teal/Dark Green */
+      --color-secondary: #005A4E;         /* Darker Teal for hover/accents */
+      --color-accent-light: #F0E0C1;      /* Warm Beige */
+      --color-white: #FFFFFF;
+      --color-dark: #333333;              /* Dark Grey/Black for text */
+      --color-bg-light: #F9F9F9;          /* Near White Background for Main Content */
+      --color-bg-page: #E0D0B1;           /* Darker Beige for Body Background */
+      --color-border: #CCCCCC;
+      --color-error: #D32F2F;
+      
+      /* New UI Variables */
+      --border-radius-card: 12px;
+      --border-radius-sm: 6px;
+      --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.1);
     }
 
     * {
@@ -21,30 +30,39 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background-color: var(--bg-light);
-      color: var(--text-dark);
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern Font Preference */
+      background: linear-gradient(135deg, var(--color-accent-light) 0%, var(--color-bg-page) 100%);
+      color: var(--color-dark);
+      min-height: 100vh;
+      display: flex;
     }
 
     .dashboard {
       display: flex;
-      min-height: 100vh;
+      width: 100%;
     }
 
+    /* --- SIDEBAR --- */
     .sidebar {
       width: 250px;
-      background-color: var(--primary-color);
-      color: #fff;
-      padding: 20px;
+      background-color: var(--color-primary);
+      color: var(--color-white);
+      padding: 30px 0 20px 0; /* Adjusted padding */
       display: flex;
       flex-direction: column;
-      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      box-shadow: 6px 0 20px rgba(0, 0, 0, 0.3); /* Deeper shadow */
+      flex-shrink: 0;
+      border-top-right-radius: var(--border-radius-card); /* Soft edge */
+      border-bottom-right-radius: var(--border-radius-card); /* Soft edge */
     }
 
     .sidebar h2 {
       text-align: center;
-      margin-bottom: 30px;
-      font-size: 1.5em;
+      margin-bottom: 40px;
+      font-size: 1.8em;
+      font-weight: 700; /* Bolder for modern look */
+      color: var(--color-accent-light);
+      letter-spacing: 1.5px;
     }
 
     .sidebar ul {
@@ -52,100 +70,149 @@
     }
 
     .sidebar li a {
-      display: block;
-      padding: 12px 15px;
-      margin-bottom: 10px;
-      color: var(--text-light);
+      display: flex; /* Use flex for alignment */
+      align-items: center;
+      gap: 10px; /* Space for future icons */
+      padding: 15px 25px;
+      margin: 5px 15px; /* Margin for floating effect */
+      border-radius: var(--border-radius-sm); /* Rounded menu items */
+      color: var(--color-accent-light);
       text-decoration: none;
-      border-radius: 5px;
-      transition: background-color 0.3s, color 0.3s;
+      transition: background-color 0.3s, color 0.3s, transform 0.2s, box-shadow 0.3s;
+      border-left: 5px solid transparent;
+      font-size: 1.05em;
+      font-weight: 500;
     }
 
-    .sidebar li a:hover,
+    .sidebar li a:hover {
+      background-color: var(--color-secondary);
+      color: var(--color-white);
+      transform: translateX(5px); /* Subtle hover animation */
+    }
+    
     .sidebar li a.active {
-      background-color: var(--secondary-color);
-      color: #fff;
+      background-color: var(--color-secondary);
+      border-left: 5px solid var(--color-accent-light);
+      color: var(--color-white);
+      font-weight: bold;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     }
 
+    /* --- MAIN CONTENT AREA --- */
     .main-content {
       flex-grow: 1;
-      padding: 20px;
-      background-color: #fff;
-      border-radius: 8px;
+      padding: 30px; /* Increased padding */
+      background-color: var(--color-bg-light);
+      border-radius: var(--border-radius-card); /* Rounded main container */
       margin: 20px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      box-shadow: var(--shadow-md); /* Prominent shadow */
+      overflow-y: auto;
     }
 
     .data-section {
-      padding: 20px;
-      border-radius: 8px;
-      background-color: var(--bg-light);
-      border: 1px solid var(--border-color);
+      padding: 30px;
+      border-radius: var(--border-radius-card);
+      background-color: var(--color-white);
+      box-shadow: var(--shadow-soft);
+      margin-bottom: 30px; /* Increased bottom margin */
+      transition: all 0.3s ease;
+    }
+    
+    .data-section:hover {
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
     }
 
     .data-section h2 {
-      margin-bottom: 20px;
-      font-size: 1.8em;
-      color: var(--primary-color);
-      border-bottom: 2px solid var(--secondary-color);
-      padding-bottom: 10px;
+      margin-bottom: 25px; /* Increased margin */
+      font-size: 2.2em;
+      color: var(--color-secondary); /* Slightly different color for heading */
+      border-bottom: 3px solid var(--color-primary); /* Thicker border */
+      padding-bottom: 15px;
+      font-weight: 600;
     }
 
+    /* --- TABLES --- */
     .table-container {
       width: 100%;
       overflow-x: auto;
+      border-radius: var(--border-radius-card);
+      border: 1px solid var(--color-border); /* Subtle border around container */
     }
 
     table {
       width: 100%;
-      border-collapse: collapse;
+      border-collapse: separate; /* Use separate for rounded corners */
+      border-spacing: 0;
       margin: 0;
       padding: 0;
-      table-layout: fixed;
+      min-width: 900px;
     }
+    
+    /* Rounded corners for table header */
+    table thead th:first-child { border-top-left-radius: var(--border-radius-sm); }
+    table thead th:last-child { border-top-right-radius: var(--border-radius-sm); }
 
     table th, table td {
-      padding: 12px 15px;
-      border: 1px solid var(--border-color);
+      padding: 15px; /* Increased padding */
+      border: none; /* Remove individual cell borders */
+      border-bottom: 1px solid var(--color-border); /* Separator line */
       text-align: left;
+      font-size: 0.95em;
+    }
+    
+    /* Last row should not have bottom border */
+    table tbody tr:last-child td {
+        border-bottom: none;
     }
 
     table th {
-      background-color: var(--secondary-color);
-      color: #fff;
-      font-weight: bold;
+      background-color: var(--color-secondary); /* Darker primary for contrast */
+      color: var(--color-white);
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.08em;
+      text-align: center;
+      padding: 18px 10px;
+    }
+
+    table td {
+        vertical-align: middle;
     }
 
     table tr:nth-child(even) {
-      background-color: #f4fcfb;
+      background-color: #e8f9f7; /* Very light teal */
     }
 
     table tr:hover {
-      background-color: #e6f7f5;
+      background-color: #d8f5f1; /* Lighter hover color */
       cursor: pointer;
+      transform: scale(1.005); /* Subtle scale effect */
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
     }
 
+    /* --- DASHBOARD LISTS (EVENTS) --- */
     .event-list-container {
       display: flex;
       flex-wrap: wrap;
-      gap: 20px;
+      gap: 25px; /* Increased gap */
     }
     
     .event-list {
-      flex: 1 1 45%;
-      background-color: #f0fdf9;
-      padding: 15px;
-      border-radius: 8px;
-      border: 1px solid #c8e6c9;
+      flex: 1 1 48%; /* Adjusted flex basis */
+      background-color: var(--color-bg-light);
+      padding: 25px;
+      border-radius: var(--border-radius-card);
+      border: 1px solid var(--color-accent-light);
+      box-shadow: var(--shadow-soft);
     }
 
     .event-list h3 {
-      color: var(--primary-color);
-      margin-bottom: 10px;
-      border-bottom: 1px solid var(--secondary-color);
-      padding-bottom: 5px;
+      color: var(--color-primary);
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--color-accent-light);
+      padding-bottom: 8px;
+      font-weight: 600;
     }
     
     .event-list ul {
@@ -154,16 +221,269 @@
     }
     
     .event-list li {
-      background-color: #fff;
-      border: 1px solid var(--border-color);
-      border-radius: 5px;
-      padding: 10px;
-      margin-bottom: 10px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      background-color: var(--color-white);
+      border: 1px solid #e0e0e0;
+      border-left: 6px solid var(--color-primary);
+      border-radius: var(--border-radius-sm);
+      padding: 18px;
+      margin-bottom: 12px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+      transition: all 0.2s;
+    }
+    .event-list li:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+        border-left: 6px solid var(--color-secondary); /* Change border color on hover */
     }
 
     .hidden {
       display: none;
+    }
+
+    /* --- FILTERS --- */
+    .event-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem 1.5rem; /* Wider gap */
+      margin-bottom: 2rem;
+      align-items: flex-end;
+    }
+
+    .event-filters .filter-group {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .event-filters .filter-group label {
+      font-size: 0.9rem;
+      color: var(--color-dark);
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+    
+    .event-filters select, .event-filters input[type="date"] {
+      padding: 0.8rem;
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-sm);
+      font-size: 1rem;
+      background-color: var(--color-white);
+      transition: border-color 0.3s, box-shadow 0.3s;
+      min-width: 150px;
+    }
+    .event-filters select:focus, .event-filters input[type="date"]:focus {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 3px rgba(0, 115, 102, 0.2); /* Focus glow */
+        outline: none;
+    }
+    
+    /* --- ACTION BUTTONS (ADD/EXPORT) --- */
+    .button-container {
+        display: flex;
+        justify-content: flex-end;
+        gap: 15px; /* Wider gap */
+        margin-bottom: 25px;
+    }
+    
+    .add-btn, .export-btn {
+        background-color: var(--color-primary);
+        color: var(--color-white);
+        padding: 12px 20px;
+        border: none;
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+        font-size: 1.05em;
+        font-weight: 600;
+        transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+    .add-btn:hover, .export-btn:hover {
+        background-color: var(--color-secondary);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Specific button styling */
+    #view-flagged-btn {
+        background-color: var(--color-error) !important;
+    }
+    #view-flagged-btn:hover {
+        background-color: #B71C1C !important;
+    }
+    
+    .btn-secondary {
+        background-color: var(--color-bg-light);
+        color: var(--color-dark);
+        padding: 0.9rem 1.3rem; /* Slightly larger secondary button */
+        font-size: 1em;
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+        transition: background-color 0.3s ease, box-shadow 0.3s;
+    }
+
+    .btn-secondary:hover {
+        background-color: var(--color-accent-light);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* --- FORMS (Add/Edit Faculty/Department) --- */
+    .form-container {
+      background: var(--color-white);
+      padding: 35px; /* Increased padding */
+      border-radius: var(--border-radius-card);
+      box-shadow: var(--shadow-md);
+      width: 100%;
+      max-width: 750px; /* Slightly wider form container */
+      margin: 30px auto;
+      border-top: 6px solid var(--color-primary); /* Thicker accent bar */
+    }
+
+    .form-container h2 {
+      margin-top: 0;
+      margin-bottom: 25px;
+      font-size: 2rem;
+      text-align: center;
+      color: var(--color-primary);
+      border-bottom: 2px solid var(--color-accent-light);
+      padding-bottom: 15px;
+      font-weight: 700;
+    }
+    
+    .form-container form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem; /* Increased gap */
+    }
+
+    .form-group {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.6rem;
+      font-weight: 700;
+      color: var(--color-secondary); /* Darker label for prominence */
+      font-size: 0.95rem;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px; /* Increased padding */
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-sm);
+      font-size: 1rem;
+      outline: none;
+      box-sizing: border-box;
+      background-color: var(--color-bg-light);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(0, 115, 102, 0.2);
+    }
+    
+    /* Profile picture file input special handling */
+    input[type="file"] {
+        padding: 8px 12px; /* Adjusted padding for file input */
+    }
+
+    .form-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: center;
+      gap: 2rem; /* Increased gap */
+      margin-top: 1.5rem;
+    }
+
+    .btn {
+      padding: 1rem 1.8rem; /* Larger buttons */
+      font-size: 1.05em;
+      border: none;
+      border-radius: var(--border-radius-sm);
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      flex: 0 1 180px;
+    }
+    
+    .btn-primary {
+      background-color: var(--color-primary);
+      color: var(--color-white);
+      box-shadow: 0 4px 10px rgba(0, 115, 102, 0.3);
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--color-secondary);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 15px rgba(0, 115, 102, 0.4);
+    }
+    
+    /* Password field styling */
+    .password-container {
+        position: relative;
+    }
+
+    .password-container input {
+        padding-right: 40px; /* space for the icon */
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        user-select: none;
+        color: var(--color-primary);
+        font-size: 1.2em; /* Larger icon */
+    }
+    
+    .action-buttons button {
+        margin: 0 8px; /* Slight increase in margin */
+        padding: 8px 14px;
+        border-radius: var(--border-radius-sm);
+        font-size: 0.9em;
+        transition: transform 0.2s;
+    }
+    
+    .action-buttons button:hover {
+        transform: translateY(-1px);
+    }
+    
+    .unflag-requested-badge {
+        background-color: #ffb300; /* Darker Amber for better visibility */
+        color: var(--color-dark);
+        padding: 5px 10px;
+        border-radius: var(--border-radius-sm);
+        font-size: 0.85em;
+        font-weight: 700;
+        box-shadow: 0 2px 5px rgba(255, 179, 0, 0.3);
+    }
+
+    /* --- RESPONSIVENESS --- */
+    @media (max-width: 1024px) {
+        .data-section h2 {
+            font-size: 1.8em;
+        }
+        .form-container form {
+            grid-template-columns: 1fr;
+        }
+        .form-actions {
+            justify-content: stretch;
+            flex-direction: column; /* Stack buttons */
+            gap: 1rem;
+        }
+        .form-actions .btn {
+            flex: 1;
+        }
+        .main-content {
+            padding: 20px;
+            margin: 15px;
+        }
     }
 
     @media (max-width: 768px) {
@@ -173,8 +493,14 @@
       .sidebar {
         width: 100%;
         height: auto;
-        padding: 10px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        padding: 15px 10px;
+        position: fixed;
+        top: 0;
+        z-index: 1000;
+        border-radius: 0; /* Remove rounded corners on mobile fixed header */
+      }
+      .sidebar h2 {
+          display: none;
       }
       .sidebar ul {
         display: flex;
@@ -183,17 +509,80 @@
       }
       .sidebar li a {
         text-align: center;
-        padding: 10px;
+        padding: 10px 15px;
         font-size: 0.9em;
+        margin: 5px 0;
+        border-left: none;
+        border-bottom: 3px solid transparent;
+        border-radius: 4px;
+        flex-direction: column; /* Stack text and potential icon */
+        gap: 2px;
+      }
+      .sidebar li a:hover {
+          transform: none; /* Disable horizontal slide on mobile */
+      }
+      .sidebar li a.active {
+          border-left: none;
+          border-bottom: 3px solid var(--color-accent-light);
       }
       .main-content {
         margin: 10px;
+        padding: 10px;
+        margin-top: 75px; /* Space for fixed sidebar */
       }
+      
+      .data-section {
+          padding: 15px;
+      }
+      
+      .table-container {
+          overflow-x: auto;
+      }
+      table {
+          width: 100%;
+          min-width: 650px;
+      }
+      
+      .event-filters {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 1rem;
+      }
+      
+      .event-filters select, .event-filters input[type="date"] {
+          min-width: 100%;
+      }
+      
       .data-section h2 {
-        font-size: 1.5em;
+          font-size: 1.6em;
+          padding-bottom: 10px;
+          margin-bottom: 15px;
       }
-    }
-  </style>
+      
+      /* Force buttons to stack in action container on small screens */
+      .main-content > section > div:first-child {
+          flex-direction: column;
+          align-items: flex-start !important;
+      }
+      
+      .add-btn, .export-btn, #view-flagged-btn {
+          width: 100%;
+          margin-bottom: 10px;
+      }
+      .button-container {
+          flex-direction: column;
+          gap: 10px;
+          width: 100%;
+          justify-content: flex-start;
+          margin-bottom: 15px;
+      }
+      .button-container > div {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          width: 100%;
+      }
+    }</style>
 </head>
 <body>
   <div class="dashboard">
@@ -201,7 +590,7 @@
       <h2>Admin Panel</h2>
       <ul>
         <li><a href="#" id="view-faculty">Faculty Accounts</a></li>
-        <li><a href="#" id="view-department">Department Accounts</a></li>
+        <li><a href="#" id="view-department">Department Account</a></li>
         <li><a href="#" id="view-events">All Events</a></li>
         <li><a href="#" id="logout">Logout</a></li>
       </ul>
@@ -209,7 +598,10 @@
 
     <main class="main-content">
       <section id="faculty-section" class="data-section">
-        <h2>Faculty Accounts</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h2>Faculty Accounts</h2>
+          <button class="add-btn" id="add-faculty-btn">+ Add Faculty Account</button>
+        </div>
         <div class="table-container">
           <table id="faculty-table">
             <thead>
@@ -221,6 +613,7 @@
                 <th>Mobile No</th>
                 <th>Gender</th>
                 <th>Email</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -229,8 +622,94 @@
         </div>
       </section>
 
+      <section id="add-faculty-section" class="data-section hidden">
+        <h2>Add New Faculty Account</h2>
+        <div class="form-container">
+          <form id="add-faculty-form">
+            <div class="form-group"><label for="faculty-name">Full Name</label><input type="text" id="faculty-name" required></div>
+            <div class="form-group"><label for="faculty-id-input">Faculty ID</label><input type="text" id="faculty-id-input" required></div>
+            <div class="form-group"><label for="faculty-email">Email</label><input type="email" id="faculty-email" required></div>
+            <div class="form-group">
+                <label for="faculty-password">Password</label>
+                <div class="password-container">
+                    <input type="password" id="faculty-password" required>
+                    <span class="toggle-password">👁️</span>
+                </div>
+            </div>
+            <div class="form-group"><label for="faculty-mobile">Mobile No</label><input type="tel" id="faculty-mobile" required></div>
+            <div class="form-group"><label for="faculty-gender">Gender</label>
+              <select id="faculty-gender" required>
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group"><label for="faculty-school">School</label>
+              <select id="faculty-school" required>
+                <option value="">Select School</option>
+                <option value="GITAM School of Technology">GITAM School of Technology</option>
+                <option value="GITAM School of Sciences">GITAM School of Sciences</option>
+                <option value="GITAM School of Business">GITAM School of Business</option>
+                <option value="GITAM School of Law">GITAM School of Law</option>
+                <option value="GITAM School of Pharmacy">GITAM School of Pharmacy</option>
+                <option value="GITAM School of Architecture">GITAM School of Architecture</option>
+                <option value="GITAM Institute of Medical Science & Research (GIMSR)">GITAM Institute of Medical Science & Research (GIMSR)</option>
+              </select>
+            </div>
+            <div class="form-group"><label for="faculty-department">Department</label><input type="text" id="faculty-department" required></div>
+            <div class="form-group"><label for="faculty-profile-pic">Profile Picture</label><input type="file" id="faculty-profile-pic" accept="image/*"></div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Add Faculty</button>
+                <button type="button" class="btn btn-secondary" onclick="showSection('faculty-section')">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section id="edit-faculty-section" class="data-section hidden">
+        <h2>Edit Faculty Account</h2>
+        <div class="form-container">
+            <form id="edit-faculty-form">
+                <input type="hidden" id="edit-faculty-id-hidden">
+                <div class="form-group"><label for="edit-faculty-name">Full Name</label><input type="text" id="edit-faculty-name" required></div>
+                <div class="form-group"><label for="edit-faculty-id-input">Faculty ID</label><input type="text" id="edit-faculty-id-input" required></div>
+                <div class="form-group"><label for="edit-faculty-email">Email</label><input type="email" id="edit-faculty-email" required></div>
+                <div class="form-group"><label for="edit-faculty-mobile">Mobile No</label><input type="tel" id="edit-faculty-mobile" required></div>
+                <div class="form-group"><label for="edit-faculty-gender">Gender</label>
+                    <select id="edit-faculty-gender" required>
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group"><label for="edit-faculty-school">School</label>
+                    <select id="edit-faculty-school" required>
+                        <option value="">Select School</option>
+                        <option value="GITAM School of Technology">GITAM School of Technology</option>
+                        <option value="GITAM School of Sciences">GITAM School of Sciences</option>
+                        <option value="GITAM School of Business">GITAM School of Business</option>
+                        <option value="GITAM School of Law">GITAM School of Law</option>
+                        <option value="GITAM School of Pharmacy">GITAM School of Pharmacy</option>
+                        <option value="GITAM School of Architecture">GITAM School of Architecture</option>
+                        <option value="GITAM Institute of Medical Science & Research (GIMSR)">GITAM Institute of Medical Science & Research (GIMSR)</option>
+                    </select>
+                </div>
+                <div class="form-group"><label for="edit-faculty-department">Department</label><input type="text" id="edit-faculty-department" required></div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" onclick="showSection('faculty-section')">Cancel</button>
+                </div>
+            </form>
+        </div>
+      </section>
+
       <section id="department-section" class="data-section hidden">
-        <h2>Department Accounts</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h2>Department Account</h2>
+         <!-- <button class="add-btn" id="add-department-btn">+ Add Department Account</button>-->
+        </div>
         <div class="table-container">
           <table id="department-table">
             <thead>
@@ -240,6 +719,7 @@
                 <th>School</th>
                 <th>Head of the Department</th>
                 <th>Email</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -248,22 +728,175 @@
         </div>
       </section>
 
-      <section id="events-section" class="data-section hidden">
-        <h2>All Events</h2>
-        <div class="event-list-container">
-          <div class="event-list">
-            <h3>Faculty Events</h3>
-            <ul id="faculty-events-list"></ul>
-          </div>
-          <div class="event-list">
-            <h3>Department Events</h3>
-            <ul id="department-events-list"></ul>
-          </div>
+      <section id="add-department-section" class="data-section hidden">
+        <h2>Add New Department Account</h2>
+        <div class="form-container">
+          <form id="add-department-form">
+            <div class="form-group"><label for="dept-name">Department Name</label><input type="text" id="dept-name" required></div>
+            <div class="form-group"><label for="dept-id-input">Department ID</label><input type="text" id="dept-id-input" required></div>
+            <div class="form-group"><label for="dept-email">Email</label><input type="email" id="dept-email" required></div>
+            <div class="form-group">
+                <label for="dept-pin">PIN</label>
+                <div class="password-container">
+                    <input type="password" id="dept-pin" required>
+                    <span class="toggle-password">👁️</span>
+                </div>
+            </div>
+            <div class="form-group"><label for="dept-head">Head of the Department</label><input type="text" id="dept-head" required></div>
+            <div class="form-group"><label for="dept-school">School</label>
+              <select id="dept-school" required>
+                <option value="">Select School</option>
+                <option value="GITAM School of Technology">GITAM School of Technology</option>
+                <option value="GITAM School of Sciences">GITAM School of Sciences</option>
+                <option value="GITAM School of Business">GITAM School of Business</option>
+                <option value="GITAM School of Law">GITAM School of Law</option>
+                <option value="GITAM School of Pharmacy">GITAM School of Pharmacy</option>
+                <option value="GITAM School of Architecture">GITAM School of Architecture</option>
+                <option value="GITAM Institute of Medical Science & Research (GIMSR)">GITAM Institute of Medical Science & Research (GIMSR)</option>
+              </select>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Add Department</button>
+                <button type="button" class="btn btn-secondary" onclick="showSection('department-section')">Cancel</button>
+            </div>
+          </form>
         </div>
       </section>
+
+      <section id="edit-department-section" class="data-section hidden">
+        <h2>Edit Department Account</h2>
+        <div class="form-container">
+          <form id="edit-department-form">
+            <input type="hidden" id="edit-dept-id-hidden">
+            <div class="form-group"><label for="edit-dept-name">Department Name</label><input type="text" id="edit-dept-name" required></div>
+            <div class="form-group"><label for="edit-dept-id-input">Department ID</label><input type="text" id="edit-dept-id-input" required></div>
+            <div class="form-group"><label for="edit-dept-email">Email</label><input type="email" id="edit-dept-email" required></div>
+            <div class="form-group"><label for="edit-dept-head">Head of the Department</label><input type="text" id="edit-dept-head" required></div>
+            <div class="form-group"><label for="edit-dept-school">School</label>
+              <select id="edit-dept-school" required>
+                <option value="">Select School</option>
+                <option value="GITAM School of Technology">GITAM School of Technology</option>
+                <option value="GITAM School of Sciences">GITAM School of Sciences</option>
+                <option value="GITAM School of Business">GITAM School of Business</option>
+                <option value="GITAM School of Law">GITAM School of Law</option>
+                <option value="GITAM School of Pharmacy">GITAM School of Pharmacy</option>
+                <option value="GITAM School of Architecture">GITAM School of Architecture</option>
+                <option value="GITAM Institute of Medical Science & Research (GIMSR)">GITAM Institute of Medical Science & Research (GIMSR)</option>
+              </select>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <button type="button" class="btn btn-secondary" onclick="showSection('department-section')">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section id="events-section" class="data-section hidden">
+        <h2>All Events</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div class="event-filters">
+                <div class="filter-group">
+                    <label for="type-filter">Filter by Type</label>
+                    <select id="type-filter">
+                        <option value="">All Types</option>
+                        <option>Workshop</option>
+                        <option>Seminar</option>
+                        <option>FDP</option>
+                        <option>STP</option>
+                        <option>Competition</option>
+                        <option>Guest Lecture</option>
+                        <option>Technical talk</option>
+                        <option>Conference</option>
+                        <option>Hackathon</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="days-filter">Filter by Days</label>
+                    <select id="days-filter">
+                        <option value="">All Durations</option>
+                        <option value="1">1 Day</option>
+                        <option value="2-7">2 - 7 Days</option>
+                        <option value="8-30">8 - 30 Days</option>
+                        <option value="31+">More than 30 Days</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="role-filter">Filter by Event Role</label>
+                    <select id="role-filter">
+                        <option value="">All Roles</option>
+                        <option>Organized</option>
+                        <option>Attended</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+    <label for="academic-year-filter">Filter by Academic Year</label>
+    <select id="academic-year-filter">
+        <option value="">All Years</option>
+        </select>
+</div>
+                <div class="filter-group">
+                    <label for="from-date-filter">From Date</label>
+                    <input type="date" id="from-date-filter">
+                </div>
+                <div class="filter-group">
+                    <label for="to-date-filter">To Date</label>
+                    <input type="date" id="to-date-filter">
+                </div>
+            </div>
+            <div>
+                <button class="add-btn" id="export-excel-btn">Export to Excel</button>
+                <button class="add-btn" id="view-flagged-btn" style="background-color: #f44336;">View Flagged Events</button>
+            </div>
+        </div>
+        <div class="table-container">
+            <table id="all-events-table">
+                <thead>
+                    <tr>
+                        <th style="font-size: small; text-align: center;">Title</th>
+                        <th style="font-size: small; text-align: center;">Type</th>
+                        <th style="font-size: small; text-align: center;">From Date</th>
+                        <th style="font-size: small; text-align: center;">To Date</th>
+                        <th style="font-size: small; text-align: center;">No. of Days</th>
+                        <th style="font-size: small; text-align: center;">Participants</th>
+                        <th style="font-size: small; text-align: center;">Event Role</th>
+                        <th style="font-size: small; text-align: center;">Location</th>
+                        <th style="font-size: small; text-align: center;">Attachments</th>
+                        <th style="font-size: small; text-align: center;">Event Source</th>
+                        <th style="font-size: small; text-align: center;">Name</th>
+                        <th style="font-size: small; text-align: center;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="all-events-table-body">
+                </tbody>
+            </table>
+        </div>
+      </section>
+
+      <section id="flagged-events-section" class="data-section hidden">
+        <h2>Flagged Events</h2>
+        <div class="table-container">
+          <table id="flagged-events-table">
+           <thead>
+  <tr>
+    <th>Event Title</th>
+    <th>Source Table</th>
+    <th>Admin Comment</th>
+    <th>User Comment</th>
+    <th>Request Status</th>
+    <th>Date Flagged</th>
+    <th>Actions</th>
+  </tr>
+</thead>
+            <tbody id="flagged-events-table-body">
+            </tbody>
+          </table>
+        </div>
+      </section>
+
     </main>
   </div>
-
-  <script src="js/admin.js" type="module"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="js/admin.js" type="module"></script>
 </body>
 </html>

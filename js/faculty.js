@@ -12,6 +12,9 @@ if (!facultyIdStr || !facultyRowId) {
   try { window.location = "../index.html"; } catch (e) {}
 }
 
+let allEvents = []; // Store the full list of events
+let flaggedEvents = []; // Store the list of flagged events
+
 // Wrap all logic in a window.onload listener to ensure the DOM is ready
 window.onload = function() {
   console.log("DOM and faculty script loaded.");
@@ -75,51 +78,202 @@ window.onload = function() {
   async function loadEvents() {
     console.log("Loading faculty events...");
     const tableBody = document.getElementById("events-table-body");
-    tableBody.innerHTML = "<tr><td colspan='7'>Loading events...</td></tr>";
+    tableBody.innerHTML = "<tr><td colspan='10'>Loading events...</td></tr>";
 
     const { data: events, error } = await supabase
       .from("faculty_events")
-      .select("title, type, from_date, to_date, participants, event_role, attachments")
+      .select("id, title, type, from_date, to_date, participants, event_role, attachments, location")
       .eq("faculty_id", facultyRowId)
       .order("from_date", { ascending: false });
 
     if (error) {
       console.error("Error fetching events:", error.message);
-      tableBody.innerHTML = `<tr><td colspan='7'>Error loading events.</td></tr>`;
+      tableBody.innerHTML = `<tr><td colspan='10'>Error loading events.</td></tr>`;
       return;
     }
 
+    allEvents = events || []; // Store fetched events
+    filterAndRenderEvents(); // Render all events initially
+
+    // Attach filter listeners after the content is loaded
+    document.getElementById("type-filter").addEventListener("change", filterAndRenderEvents);
+    document.getElementById("days-filter").addEventListener("change", filterAndRenderEvents);
+    document.getElementById("event-role-filter").addEventListener("change", filterAndRenderEvents);
+    document.getElementById("from-date-filter").addEventListener("change", filterAndRenderEvents);
+    document.getElementById("to-date-filter").addEventListener("change", filterAndRenderEvents);
+  }
+  
+  // -----------------------------
+  // Load flagged events
+  // -----------------------------
+ // In faculty.js
+
+async function loadFlaggedEvents() {
+    console.log("Loading flagged events...");
+    const tableBody = document.getElementById("flagged-events-table-body");
+    tableBody.innerHTML = "<tr><td colspan='6'>Loading flagged events...</td></tr>";
+
+    const { data, error } = await supabase.from("flagged_events")
+        .select("id, title, type, from_date, admin_comment, unflag_requested")
+        .eq("faculty_id", facultyRowId)
+        .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching flagged events:", error.message);
+      tableBody.innerHTML = `<tr><td colspan='6'>Error loading flagged events.</td></tr>`;
+      return;
+    }
+
+    flaggedEvents = data || [];
+    renderFlaggedEvents();
+}
+  
+  // In faculty.js
+
+function renderFlaggedEvents() {
+    const tableBody = document.getElementById("flagged-events-table-body");
     tableBody.innerHTML = "";
-    if (events && events.length > 0) {
-      events.forEach(event => {
-        const row = tableBody.insertRow();
-        const attachmentsCell = event.attachments && event.attachments.length > 0
-          ? `<td><button class="btn btn-primary download-attachments-btn" data-attachments='${JSON.stringify(event.attachments)}'>Download Images</button></td>`
-          : `<td>N/A</td>`;
-        
+
+    if (flaggedEvents.length === 0) {
+        tableBody.innerHTML = "<tr><td colspan='6'>No flagged events found.</td></tr>";
+        return;
+    }
+
+    flaggedEvents.forEach(event => {
+        const row = document.createElement("tr");
+
+        // Determine status and action based on unflag_requested status
+        let statusHtml, actionHtml;
+        if (event.unflag_requested) {
+            statusHtml = '<span class="unflag-requested-status">Request Sent</span>';
+            actionHtml = '<span>Awaiting Admin Review</span>';
+        } else {
+            statusHtml = '<span class="flagged-status">Flagged</span>';
+            actionHtml = `<button class="btn btn-primary request-unflag-btn" data-id="${event.id}">Request Unflag</button>`;
+        }
+
         row.innerHTML = `
-          <td>${event.title || "N/A"}</td>
-          <td>${event.type || "N/A"}</td>
-          <td>${event.from_date || "N/A"}</td>
-          <td>${event.to_date || "N/A"}</td>
-          <td>${event.participants || "N/A"}</td>
-          <td>${event.event_role || "N/A"}</td>
-          ${attachmentsCell}
+            <td>${event.title || 'N/A'}</td>
+            <td>${event.type || 'N/A'}</td>
+            <td>${event.from_date || 'N/A'}</td>
+            <td>${event.admin_comment || 'N/A'}</td>
+            <td>${statusHtml}</td>
+            <td>${actionHtml}</td>
         `;
         tableBody.appendChild(row);
-      });
-      
-      // Attach event listeners to all 'Download Images' buttons
-      document.querySelectorAll('.download-attachments-btn').forEach(button => {
-        button.addEventListener('click', (e) => {
-            const attachments = JSON.parse(e.target.dataset.attachments);
-            downloadImagesAsZip(attachments);
-        });
-      });
-      
-    } else {
-      tableBody.innerHTML = "<tr><td colspan='7'>No events found.</td></tr>";
+    });
+}
+  // -----------------------------
+  // Request Unflag Functionality
+  // -----------------------------
+  async function requestUnflag(flaggedId) {
+    const comment = prompt("Please provide a reason for the unflag request (e.g., 'I have corrected the details'):");
+    if (!comment || comment.trim() === '') {
+        alert("A reason is required to request an unflag.");
+        return;
     }
+    
+    const { error } = await supabase.from('flagged_events')
+      .update({ unflag_requested: true, owner_comment: comment })
+      .eq('id', flaggedId);
+      
+    if (error) {
+      alert("Failed to send unflag request: " + error.message);
+      console.error("Unflag request error:", error);
+    } else {
+      alert("Unflag request sent successfully! An admin will review it.");
+      loadFlaggedEvents();
+    }
+  }
+  
+  // -----------------------------
+  // Filter and Render Events
+  // -----------------------------
+  function filterAndRenderEvents() {
+      const typeFilter = document.getElementById("type-filter")?.value || "";
+      const daysFilter = document.getElementById("days-filter")?.value || "";
+      const roleFilter = document.getElementById("event-role-filter")?.value || "";
+      const fromDate = document.getElementById("from-date-filter")?.value || "";
+      const toDate = document.getElementById("to-date-filter")?.value || "";
+      const tableBody = document.getElementById("events-table-body");
+      tableBody.innerHTML = "";
+
+      const filteredEvents = allEvents.filter(event => {
+          const numDays = calculateDays(event.from_date, event.to_date);
+
+          // MODIFIED: Logic to handle 'Others' filter
+          let matchesType = false;
+          if (!typeFilter) {
+              matchesType = true; // No filter selected
+          } else if (typeFilter === 'Others') {
+              // Filter for events whose type is NOT one of the standard options
+              const standardTypes = ['Workshop', 'Seminar', 'FDP', 'STP', 'Competition', 'Others'];
+              matchesType = !standardTypes.includes(event.type);
+          } else {
+              // Filter for standard type selection
+              matchesType = event.type === typeFilter;
+          }
+
+          const matchesRole = !roleFilter || event.event_role === roleFilter;
+          const matchesDates = (!fromDate || (event.from_date && event.from_date >= fromDate)) && (!toDate || (event.to_date && event.to_date <= toDate));
+          
+          let matchesDays = true;
+          if (daysFilter) {
+              if (daysFilter === "1") {
+                  matchesDays = numDays === 1;
+              } else if (daysFilter === "2-7") {
+                  matchesDays = numDays >= 2 && numDays <= 7;
+              } else if (daysFilter === "8-30") {
+                  matchesDays = numDays >= 8 && numDays <= 30;
+              } else if (daysFilter === "31+") {
+                  matchesDays = numDays > 30;
+              }
+          }
+
+          return matchesType && matchesRole && matchesDates && matchesDays;
+      });
+      
+      if (filteredEvents.length > 0) {
+          filteredEvents.forEach(event => {
+              const row = tableBody.insertRow();
+              const numDays = calculateDays(event.from_date, event.to_date);
+              
+              let participantsText = event.participants || "N/A";
+              if (event.event_role === 'Attended') {
+                  participantsText = '-';
+              }
+
+              // Corrected: Ensure a valid URL is passed to the data-url attribute
+              const attachmentsCell = event.attachments
+                  ? `<td><button class="btn btn-secondary view-link-btn" data-url="${event.attachments.replace(/[{}]/g, '')}">View Link</button></td>`
+                  : `<td>N/A</td>`;
+              
+              row.innerHTML = `
+                  <td>${event.title || "N/A"}</td>
+                  <td>${event.type || "N/A"}</td>
+                  <td>${event.from_date || "N/A"}</td>
+                  <td>${event.to_date || "N/A"}</td>
+                  <td>${numDays}</td>
+                  <td>${participantsText}</td>
+                  <td>${event.event_role || "N/A"}</td>
+                  <td>${event.location || "N/A"}</td>
+                  ${attachmentsCell}
+                  <td><button class="btn btn-secondary btn-edit" data-id="${event.id}">Edit</button></td>
+              `;
+          });
+      } else {
+          tableBody.innerHTML = "<tr><td colspan='10'>No events found matching your criteria.</td></tr>";
+      }
+  }
+
+  // Helper function to calculate number of days
+  function calculateDays(fromDate, toDate) {
+    if (!fromDate || !toDate) return 'N/A';
+    const oneDay = 24 * 60 * 60 * 1000;
+    const from = new Date(fromDate);
+    const to = new Date(toDate);
+    const diffDays = Math.round(Math.abs((to - from) / oneDay)) + 1; // +1 to include both start and end days
+    return diffDays;
   }
   
   // -----------------------------
@@ -129,37 +283,50 @@ window.onload = function() {
       e.preventDefault();
       console.log("Add event form submitted.");
 
+      const eventRole = document.getElementById("eventRole").value;
       const title = document.getElementById("eventTitle").value.trim();
-      const type = document.getElementById("eventType").value;
+      const selectedType = document.getElementById("eventType").value;
+      const customType = document.getElementById("customEventType").value.trim(); // NEW
+      
+      // Determine the final type to save
+      const finalType = (selectedType === 'Others' && customType) ? customType : selectedType;
+      
+      if (selectedType === 'Others' && !customType) {
+          alert("Please specify the custom event type or select a standard type.");
+          return;
+      }
+
       const from_date = document.getElementById("fromDate").value;
       const to_date = document.getElementById("toDate").value;
-      const participants = document.getElementById("participants").value;
+      const participants = eventRole === 'Organized' ? (document.getElementById("participants").value || 0) : null;
       const remarks = document.getElementById("remarks").value;
-      const eventRole = document.getElementById("eventRole").value;
-      const photos = document.getElementById("photos").files;
+      const location = document.getElementById("eventLocation").value;
+      const attachments = document.getElementById("attachments").value;
 
-      if (!title || !eventRole) {
-          alert("Event title and role are required.");
+      if (!title || !eventRole || !location) {
+          alert("Event title, role, and location are required.");
+          return;
+      }
+
+      if (!attachments) {
+          alert("A Drive link for documents/photos is required.");
           return;
       }
       
-      if (photos.length > 10) {
-          alert("You can only upload a maximum of 10 images.");
-          return;
-      }
-
-      // 1. Insert the event record first to get a unique ID
       const eventData = {
           faculty_id: facultyRowId,
           event_role: eventRole,
-          type: type,
+          type: finalType, // USE FINAL TYPE
           title: title,
           from_date: from_date,
           to_date: to_date,
           participants: participants,
-          remarks: remarks
+          remarks: remarks,
+          location: location,
+          attachments: attachments
       };
-      const { data: eventResult, error: insertError } = await supabase.from("faculty_events").insert([eventData]).select().single();
+      
+      const { error: insertError } = await supabase.from("faculty_events").insert([eventData]);
 
       if (insertError) {
           console.error("Failed to add event:", insertError.message);
@@ -167,81 +334,116 @@ window.onload = function() {
           return;
       }
 
-      const eventId = eventResult.id;
-      const uploadedAttachments = [];
-
-      // 2. Upload attachments to Supabase Storage
-      if (photos.length > 0) {
-        for (const file of photos) {
-            const filePath = `faculty-events/${eventId}/${file.name}`;
-            const { error: uploadError } = await supabase.storage.from('faculty-events').upload(filePath, file);
-            if (uploadError) {
-                console.error("Upload failed:", uploadError);
-                alert(`Failed to upload ${file.name}: ${uploadError.message}`);
-                continue;
-            }
-            const { data: publicUrlData } = supabase.storage.from('faculty-events').getPublicUrl(filePath);
-            uploadedAttachments.push(publicUrlData.publicUrl);
-        }
-
-        // 3. Update the event record with the attachment URLs
-        const { error: updateError } = await supabase.from("faculty_events").update({ attachments: uploadedAttachments }).eq("id", eventId);
-        if (updateError) {
-            console.error("Update failed:", updateError);
-            alert("Event added, but failed to save attachment links: " + updateError.message);
-        }
-      }
-
       alert("Event added successfully!");
       loadEvents(); // Reload the events list
       document.querySelector("#add-event-form").reset(); // Clear the form
-      document.getElementById('events-section').classList.remove('hidden'); // Go back to events table
-      document.getElementById('add-event-section').classList.add('hidden');
-      document.querySelector('.nav-links a[id=\'events-link\']').classList.add('active');
+      showSection('events-section');
   });
-  
-  // -----------------------------
-  // Download Images as Zip
-  // -----------------------------
-  async function downloadImagesAsZip(urls) {
-    console.log("Downloading images as zip...");
-    const zip = new JSZip();
-    const folderName = "event_attachments";
-    
-    let promises = [];
-    urls.forEach((url, index) => {
-      const filename = url.substring(url.lastIndexOf('/') + 1);
-      const promise = fetch(url)
-        .then(res => {
-          if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.statusText}`);
-          return res.blob();
-        })
-        .then(blob => {
-          zip.file(`${folderName}/${filename}`, blob);
-        })
-        .catch(err => {
-          console.error(err);
-          alert(`Error downloading file: ${filename}. Check the console for details.`);
-        });
-      promises.push(promise);
-    });
 
-    try {
-      await Promise.all(promises);
-      const content = await zip.generateAsync({ type: "blob" });
-      saveAs(content, "event_attachments.zip");
-      console.log("Zip file generated and download started.");
-    } catch (err) {
-      console.error("Error generating zip file:", err);
-      alert("An error occurred while creating the zip file.");
-    }
+  // -----------------------------
+  // Edit Event Functionality
+  // -----------------------------
+  async function editEvent(eventId) {
+      const { data, error } = await supabase.from('faculty_events').select('*').eq('id', eventId).single();
+      if (error) {
+          alert('Error fetching event data: ' + error.message);
+          return;
+      }
+      const event = data;
+      const standardTypes = ['Workshop', 'Seminar', 'FDP', 'STP', 'Competition'];
+
+      document.getElementById('edit-event-id-hidden').value = event.id;
+      document.getElementById('edit-eventRole').value = event.event_role;
+      document.getElementById('edit-eventTitle').value = event.title;
+      document.getElementById('edit-fromDate').value = event.from_date;
+      document.getElementById('edit-toDate').value = event.to_date;
+      document.getElementById('edit-participants').value = event.participants;
+      document.getElementById('edit-eventLocation').value = event.location;
+      document.getElementById('edit-attachments').value = event.attachments;
+      document.getElementById('edit-remarks').value = event.remarks;
+
+      // NEW: Handle event type for edit form
+      const isStandardType = standardTypes.includes(event.type);
+      const editEventTypeSelect = document.getElementById('edit-eventType');
+      const editCustomGroup = document.getElementById('editCustomEventTypeGroup');
+      const editCustomInput = document.getElementById('editCustomEventType');
+
+      if (isStandardType) {
+          editEventTypeSelect.value = event.type;
+          editCustomGroup.classList.add('hidden');
+          editCustomInput.value = '';
+      } else {
+          // It's a custom type, so set the dropdown to 'Others' and fill the text box
+          editEventTypeSelect.value = 'Others';
+          editCustomGroup.classList.remove('hidden');
+          editCustomInput.value = event.type;
+      }
+
+      if (event.event_role === 'Attended') {
+          document.getElementById('edit-participants-group').classList.add('hidden');
+      } else {
+          document.getElementById('edit-participants-group').classList.remove('hidden');
+      }
+
+      showSection('edit-event-section');
   }
+
+  document.getElementById('edit-event-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const eventId = document.getElementById('edit-event-id-hidden').value;
+      const eventRole = document.getElementById("edit-eventRole").value;
+      const title = document.getElementById("edit-eventTitle").value.trim();
+      const selectedType = document.getElementById("edit-eventType").value;
+      const customType = document.getElementById("editCustomEventType").value.trim(); // NEW
+
+      // Determine the final type to save
+      const finalType = (selectedType === 'Others' && customType) ? customType : selectedType;
+      
+      if (selectedType === 'Others' && !customType) {
+          alert("Please specify the custom event type or select a standard type.");
+          return;
+      }
+
+      const from_date = document.getElementById("edit-fromDate").value;
+      const to_date = document.getElementById("edit-toDate").value;
+      const participants = eventRole === 'Organized' ? (document.getElementById("edit-participants").value || null) : null;
+      const location = document.getElementById("edit-eventLocation").value;
+      const attachments = document.getElementById("edit-attachments").value;
+      const remarks = document.getElementById("edit-remarks").value;
+
+      if (!title || !eventRole || !location) {
+          alert("Event title, role, and location are required.");
+          return;
+      }
+
+      const updateData = {
+          event_role: eventRole,
+          type: finalType, // USE FINAL TYPE
+          title: title,
+          from_date: from_date,
+          to_date: to_date,
+          participants: participants,
+          location: location,
+          attachments: attachments,
+          remarks: remarks
+      };
+      
+      const { error } = await supabase.from('faculty_events').update(updateData).eq('id', eventId);
+
+      if (error) {
+          alert('Error updating event: ' + error.message);
+      } else {
+          alert('Event details updated successfully!');
+          showSection('events-section');
+          loadEvents();
+      }
+  });
 
 
   // -----------------------------
   // Edit Profile form submission
   // -----------------------------
-  document.querySelector("#edit-profile-section form").addEventListener("submit", async function(e) {
+  document.querySelector("#edit-profile-form").addEventListener("submit", async function(e) {
       e.preventDefault();
       console.log("Edit profile form submitted.");
       
@@ -288,12 +490,199 @@ window.onload = function() {
       } else {
           alert("Profile updated!");
           loadProfile();
-          document.getElementById('profile-section').classList.remove('hidden');
-          document.getElementById('edit-profile-section').classList.add('hidden');
-          document.querySelector('.nav-links a[id=\'profile-link\']').classList.add('active');
+          showSection('profile-section');
       }
   });
 
+  // -----------------------------
+  // Excel Export
+  // -----------------------------
+  document.getElementById('export-excel-btn').addEventListener('click', () => {
+    exportToExcel('events-table', 'faculty_events');
+  });
+
+  function exportToExcel(tableID, filename = 'data') {
+    const table = document.getElementById(tableID);
+    if (!table) {
+        alert("Table not found!");
+        return;
+    }
+    
+    // Create a temporary clone of the table to modify for export
+    const tempTable = table.cloneNode(true);
+    const tempRows = tempTable.querySelectorAll('tbody tr');
+    
+    tempRows.forEach(row => {
+        const linkCell = row.querySelector('.view-link-btn');
+        if (linkCell) {
+            const url = linkCell.dataset.url;
+            // Replace the button with a simple text node of the URL
+            const urlTextNode = document.createTextNode(url);
+            linkCell.parentNode.replaceChild(urlTextNode, linkCell);
+        }
+    });
+
+    const ws = XLSX.utils.table_to_sheet(tempTable);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+    XLSX.writeFile(wb, `${filename}.xlsx`);
+  }
+
+  // -----------------------------
+  // Excel Import
+  // -----------------------------
+  document.getElementById('excel-input').addEventListener('change', importExcelEvents);
+  document.getElementById('download-template-btn').addEventListener('click', downloadExcelTemplate);
+  
+  async function importExcelEvents(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const json = XLSX.utils.sheet_to_json(worksheet);
+
+        if (json.length === 0) {
+          alert("No data found in the Excel file.");
+          return;
+        }
+
+        const eventsToInsert = json.map(row => {
+          // Normalize column names to match the database schema
+          const eventRole = row['Event Role'] || 'Organized';
+          const participants = (eventRole === 'Attended') ? null : (row['No. of Participants'] || null);
+          const type = row['Type of Event'] || ''; // Get type as is
+          
+          // Handle date conversion from Excel numeric format
+          const excelDateToJSDate = (serial) => {
+            const utc_days = Math.floor(serial - 25569);
+            const utc_value = utc_days * 86400;
+            const date_info = new Date(utc_value * 1000);
+            return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate()).toISOString().split('T')[0];
+          };
+
+          const fromDate = row['From Date'] ? excelDateToJSDate(row['From Date']) : null;
+          const toDate = row['To Date'] ? excelDateToJSDate(row['To Date']) : null;
+          
+          return {
+            faculty_id: facultyRowId,
+            event_role: eventRole,
+            type: type, // Store the type from the excel sheet
+            title: row['Title of Event'] || '',
+            from_date: fromDate,
+            to_date: toDate,
+            participants: participants,
+            remarks: row['Remarks'] || '',
+            location: row['Event Location'] || '',
+            attachments: row['Attachments Drive Link'] || ''
+          };
+        }).filter(event => event.title); // Filter out rows with no title
+
+        if (eventsToInsert.length === 0) {
+          alert("No valid events found in the Excel file.");
+          return;
+        }
+
+        const { error } = await supabase.from('faculty_events').insert(eventsToInsert);
+
+        if (error) {
+          console.error("Failed to import events:", error.message);
+          alert("Failed to import events. Please check the data and try again.");
+          return;
+        }
+
+        alert(`Successfully imported ${eventsToInsert.length} events!`);
+        loadEvents(); // Refresh the event list
+        event.target.value = ''; // Clear the file input
+        showSection('events-section');
+      } catch (e) {
+        console.error("Error processing file:", e);
+        alert("Error processing file. Please ensure it's a valid Excel file with the correct format.");
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+function downloadExcelTemplate() {
+    const headers = [
+        "Event Role",
+        "Type of Event",
+        "Title of Event",
+        "From Date",
+        "To Date",
+        "No. of Participants",
+        "Event Location",
+        "Attachments Drive Link",
+        "Remarks"
+    ];
+
+    const data = [
+      headers,
+      [
+        "Organized or Attended",
+        "Workshop, Seminar, FDP, etc. (Can be any custom value)",
+        "e.g., Workshop on AI",
+        "YYYY-MM-DD",
+        "YYYY-MM-DD",
+        "e.g., 50",
+        "e.g., University Hall",
+        "e.g., https://drive.google.com/...",
+        "e.g., The event was a huge success."
+      ]
+    ];
+    
+    // Create a new workbook and add the data
+    const wb = XLSX.utils.aoa_to_sheet(data);
+
+    // Set dropdowns for 'Event Role' and 'Type of Event'
+    const dropdowns = {
+      'A': ['Organized', 'Attended'],
+      // REMOVED dropdown for 'Type of Event' to allow custom/other values from Excel
+    };
+    
+    for (let col in dropdowns) {
+      const dropdownData = dropdowns[col];
+      wb['!dataValidations'] = wb['!dataValidations'] || [];
+      wb['!dataValidations'].push({
+        sqref: `${col}2:${col}100`, // Apply to rows 3 to 100
+        type: 'list',
+        formula1: `"${dropdownData.join(',')}"`
+      });
+    }
+
+    const ws = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(ws, wb, 'Events');
+
+    // Generate the file and trigger the download
+    XLSX.writeFile(ws, 'faculty_events_template.xlsx');
+}
+
+// In faculty.js
+
+async function requestUnflag(flaggedId) {
+  const comment = prompt("Please provide a reason for the unflag request (e.g., 'I have corrected the details'):");
+  if (!comment || comment.trim() === '') {
+      alert("A reason is required to request an unflag.");
+      return;
+  }
+
+  const { error } = await supabase.from('flagged_events')
+    .update({ unflag_requested: true, owner_comment: comment })
+    .eq('id', flaggedId);
+
+  if (error) {
+    alert("Failed to send unflag request: " + error.message);
+    console.error("Unflag request error:", error);
+  } else {
+    alert("Unflag request sent successfully! An admin will review it.");
+    loadFlaggedEvents(); // Refresh the list to show the updated status
+  }
+}
   // -----------------------------
   // Logout button
   // -----------------------------
@@ -304,40 +693,120 @@ window.onload = function() {
     localStorage.removeItem("faculty_name");
     window.location = "../index.html";
   });
+  
+  // -----------------------------
+  // Event Listeners for Dynamic content
+  // -----------------------------
+  document.addEventListener('click', (e) => {
+    // Handle Edit button click
+    if (e.target.classList.contains('btn-edit')) {
+      const eventId = e.target.dataset.id;
+      editEvent(eventId);
+    }
+    // Handle View Link button click
+    if (e.target.classList.contains('view-link-btn')) {
+      const url = e.target.dataset.url;
+      if (url) {
+        window.open(url, '_blank').focus();
+      }
+    }
+    // Handle request unflag button click
+    if (e.target.classList.contains('request-unflag-btn')) {
+        const flaggedId = e.target.dataset.id;
+        requestUnflag(flaggedId);
+    }
+  });
+
+  // Toggle participants input based on event role for ADD form
+  document.getElementById('eventRole').addEventListener('change', (e) => {
+      const participantsGroup = document.getElementById('participants-group');
+      const participantsInput = document.getElementById('participants');
+      if (e.target.value === 'Attended') {
+          participantsGroup.classList.add('hidden');
+          participantsInput.required = false;
+      } else {
+          participantsGroup.classList.remove('hidden');
+          participantsInput.required = true;
+      }
+  });
+  
+  // Toggle participants input based on event role for EDIT form
+  document.getElementById('edit-eventRole').addEventListener('change', (e) => {
+      const participantsGroup = document.getElementById('edit-participants-group');
+      const participantsInput = document.getElementById('edit-participants');
+      if (e.target.value === 'Attended') {
+          participantsGroup.classList.add('hidden');
+          participantsInput.required = false;
+      } else {
+          participantsGroup.classList.remove('hidden');
+          participantsInput.required = true;
+      }
+  });
+
+  // NEW: Toggle custom event type input for ADD form
+  document.getElementById('eventType').addEventListener('change', (e) => {
+      const customGroup = document.getElementById('customEventTypeGroup');
+      const customInput = document.getElementById('customEventType');
+      if (e.target.value === 'Others') {
+          customGroup.classList.remove('hidden');
+          customInput.required = true;
+      } else {
+          customGroup.classList.add('hidden');
+          customInput.required = false;
+      }
+  });
+
+  // NEW: Toggle custom event type input for EDIT form
+  document.getElementById('edit-eventType').addEventListener('change', (e) => {
+      const customGroup = document.getElementById('editCustomEventTypeGroup');
+      const customInput = document.getElementById('editCustomEventType');
+      if (e.target.value === 'Others') {
+          customGroup.classList.remove('hidden');
+          customInput.required = true;
+      } else {
+          customGroup.classList.add('hidden');
+          customInput.required = false;
+      }
+  });
+
+  // -----------------------------
+  // Filter Listeners (Already present, but kept for completeness)
+  // -----------------------------
+  document.getElementById("type-filter").addEventListener("change", filterAndRenderEvents);
+  document.getElementById("days-filter").addEventListener("change", filterAndRenderEvents);
+  document.getElementById("event-role-filter").addEventListener("change", filterAndRenderEvents);
+  document.getElementById("from-date-filter").addEventListener("change", filterAndRenderEvents);
+  document.getElementById("to-date-filter").addEventListener("change", filterAndRenderEvents);
 
   // -----------------------------
   // Sidebar Navigation
   // -----------------------------
-  const sections = {
-      'profile-link': 'profile-section',
-      'events-link': 'events-section',
-      'add-event-link': 'add-event-section',
-      'edit-profile-link': 'edit-profile-section'
-  };
-
-  document.querySelectorAll('.nav-links a, .btn').forEach(link => {
-      link.addEventListener('click', (e) => {
-          const sectionId = sections[e.target.id];
-          if (sectionId) {
-              e.preventDefault();
-              document.querySelectorAll('section').forEach(section => {
-                  section.classList.add('hidden');
-              });
-              document.getElementById(sectionId).classList.remove('hidden');
-              
-              document.querySelectorAll('.nav-links a').forEach(navLink => navLink.classList.remove('active'));
-              if (e.target.id.includes('link')) {
-                  e.target.classList.add('active');
-              } else if (e.target.id === 'add-event-link') {
-                  document.getElementById('events-link').classList.add('active');
-              } else if (e.target.id === 'edit-profile-link') {
-                  document.getElementById('profile-link').classList.add('active');
-              }
-          }
-      });
+  document.getElementById('profile-link').addEventListener('click', (e) => {
+      e.preventDefault();
+      showSection('profile-section');
+      e.target.classList.add('active');
   });
 
+  document.getElementById('events-link').addEventListener('click', (e) => {
+      e.preventDefault();
+      showSection('events-section');
+      e.target.classList.add('active');
+  });
+  
+  document.getElementById('add-event-link').addEventListener('click', (e) => {
+      e.preventDefault();
+      showSection('add-event-section');
+      document.getElementById('events-link').classList.add('active');
+  });
+  
+  document.getElementById('flagged-link').addEventListener('click', (e) => {
+      e.preventDefault();
+      showSection('flagged-events-section');
+      loadFlaggedEvents();
+  });
+  
   // Initial data load and section visibility
   loadProfile();
   loadEvents();
+  loadFlaggedEvents();
 }; // End of window.onload

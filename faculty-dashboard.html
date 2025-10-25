@@ -5,270 +5,456 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Faculty Dashboard</title>
     <style>
-        /* --- General & Layout --- */
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f4f7f6;
-            display: flex;
-            min-height: 100vh;
-        }
+/* --- General & Layout --- */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Classy textured background using the warm beige */
+    background: radial-gradient(circle at top left, #F0E0C1, #E0D0B1);
+    display: flex;
+    min-height: 100vh;
+    color: #333;
+    transition: background-color 0.3s;
+}
 
-        .hidden {
-            display: none;
-        }
+.hidden {
+    display: none !important;
+}
 
-        /* --- Sidebar --- */
-        .sidebar {
-            width: 220px;
-            background-color: #005e53;
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            padding: 2rem 1rem;
-            flex-shrink: 0;
-        }
+/* --- Sidebar: The Foundation --- */
+.sidebar {
+    width: 250px; /* Slightly wider sidebar */
+    background-color: #007366; /* Primary Teal background */
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 0;
+    flex-shrink: 0;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+    /* Subtle hover effect on the entire sidebar */
+    transition: width 0.3s ease;
+}
 
-        .sidebar .profile-pic {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            margin: 0 auto 1rem;
-            background-image: url('https://via.placeholder.com/100'); /* Placeholder image */
-            background-size: cover;
-            background-position: center;
-            border: 3px solid #007367;
-        }
+.sidebar .profile-pic {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin: 0 auto 1.5rem;
+    background-image: url('https://via.placeholder.com/120'); 
+    background-size: cover;
+    background-position: center;
+    border: 4px solid #F0E0C1; /* High contrast border */
+    box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.1);
+}
 
-        .sidebar h3 {
-            margin-bottom: 2rem;
-            font-size: 1.2rem;
-            text-align: center;
-        }
+.sidebar h3 {
+    margin-bottom: 2.5rem;
+    font-size: 1.3rem;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: #F0E0C1; /* Use the light color for high contrast text */
+}
 
-        .nav-links {
-            list-style: none;
-            padding: 0;
-            width: 100%;
-        }
+.nav-links {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+}
 
-        .nav-links li {
-            margin: 0.5rem 0;
-        }
+.nav-links li {
+    margin: 0;
+}
 
-        .nav-links a {
-            text-decoration: none;
-            color: #fff;
-            font-size: 1rem;
-            padding: 0.8rem 1rem;
-            border-radius: 6px;
-            display: block;
-            transition: background-color 0.3s;
-            cursor: pointer;
-        }
+.nav-links a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 1rem;
+    padding: 1rem 2rem; /* Generous padding */
+    border-left: 5px solid transparent; /* For active indicator */
+    display: block;
+    transition: background-color 0.3s, border-left 0.3s, color 0.3s;
+    cursor: pointer;
+    font-weight: 500;
+}
 
-        .nav-links a:hover,
-        .nav-links a.active {
-            background-color: #007367;
-        }
+.nav-links a:hover {
+    background-color: #008f7d; /* Lighter shade of teal on hover */
+}
 
-        /* --- Main Content --- */
-        .main-content {
-            flex: 1;
-            padding: 2rem;
-            overflow-y: auto;
-        }
+.nav-links a.active {
+    background-color: #005e53; /* Darker shade of teal for active tab */
+    border-left: 5px solid #F0E0C1; /* Highlighting active tab */
+    color: #F0E0C1;
+    font-weight: 700;
+}
 
-        .content-header {
-            margin-bottom: 2rem;
-        }
+/* --- Main Content Area --- */
+.main-content {
+    flex: 1;
+    padding: 2rem 3rem; /* More horizontal padding */
+    overflow-y: auto;
+    background-color: #fff; /* White base for content area */
+}
 
-        .content-header h1 {
-            font-size: 2rem;
-            color: #333;
-        }
-        
-        /* --- Profile Card (Dashboard) --- */
-        .profile-card {
-            background: #fff;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-        }
+.content-header {
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 1rem;
+}
 
-        .profile-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 1.5rem;
-        }
+.content-header h1 {
+    font-size: 2.2rem;
+    color: #007366; /* Main heading in primary color */
+    margin: 0;
+    font-weight: 300;
+}
 
-        .profile-header h2 {
-            color: #007367;
-            margin: 0;
-        }
+/* --- Cards (Profile, Forms) --- */
+.profile-card,
+.form-container {
+    background: #fff;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Deeper shadow for elevation */
+    /* Center the card: REMOVED max-width from profile-card/form-container here to apply specific widths later */
+    margin: 0 auto 2rem; 
+    border-top: 5px solid #007366; /* Accent line at the top */
+    transition: transform 0.3s;
+}
 
-        .profile-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-        }
+.profile-card:hover,
+.form-container:hover {
+    transform: translateY(-3px);
+}
 
-        .detail-item {
-            font-size: 1rem;
-        }
+/* --- Profile Card Layout --- */
+.profile-card {
+    max-width: 900px;
+}
+.profile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+}
 
-        .detail-item strong {
-            display: block;
-            color: #555;
-            margin-bottom: 0.3rem;
-        }
-        
-        /* --- Events Table --- */
-        .events-table {
-            width: 100%;
-            background: #fff;
-            border-collapse: collapse;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
+.profile-header h2 {
+    color: #007366;
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 600;
+}
 
-        .events-table th, .events-table td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-        }
+.profile-details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem 2rem;
+}
 
-        .events-table th {
-            background-color: #fafafa;
-            font-weight: 600;
-            color: #555;
-        }
+.detail-item {
+    font-size: 1.05rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed #eee;
+}
 
-        /* --- Form Container (for Add/Edit/Settings) --- */
-        .form-container {
-            background: #fff;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-            width: 100%;
-            max-width: 550px;
-            margin: 2rem auto;
-        }
+.detail-item strong {
+    display: block;
+    color: #555;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
 
-        .form-container h2 {
-            margin-top: 0;
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
-            text-align: center;
-            color: #007367;
-        }
+#profile-pic-main {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
 
-        .form-group {
-            margin-bottom: 1rem;
-        }
+/* --- Form Container Specifics (Centered and Grid Layout) --- */
+.form-container {
+    /* Center and constrain forms */
+    max-width: 800px; 
+}
 
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: #333;
-        }
+.form-container h2 {
+    color: #007366;
+    margin-bottom: 2rem;
+    font-weight: 300;
+    border-bottom: 1px solid #F0E0C1;
+    padding-bottom: 0.5rem;
+}
 
-        input, select, textarea {
-            width: 100%;
-            padding: 0.7rem;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            outline: none;
-            box-sizing: border-box;
-        }
-        
-        input:focus, select:focus, textarea:focus {
-            border-color: #007367;
-        }
+/* Apply grid layout to the form content */
+.form-container form {
+    display: grid;
+    /* Two columns by default, sizing based on content */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem 2rem; /* Vertical and horizontal gap */
+}
 
-        textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
+.form-group {
+    /* By default, occupy one column */
+    margin-bottom: 0; 
+}
 
-        .form-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
+/* Force specific elements to span the full width of the form */
+.form-group:nth-child(1), /* Upload Profile Picture (Edit Profile Form) */
+.form-group:nth-child(2), /* Full Name (Edit Profile Form) */
+.form-group:last-child, /* Remarks/Output (Add/Edit Event Form) */
+.form-actions {
+    grid-column: 1 / -1; 
+}
 
-        /* --- Buttons --- */
-        .btn {
-            padding: 0.8rem;
-            font-size: 1rem;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            text-decoration: none;
-            text-align: center;
-            transition: background-color 0.3s ease;
-        }
-        
-        .btn-primary {
-            background-color: #007367;
-            color: #fff;
-            flex: 1;
-        }
-        
-        .btn-primary:hover {
-            background-color: #005e53;
-        }
+/* Ensure wide inputs (like Event Title/URL) use full width when necessary,
+   and make textarea span full width */
+input[type="text"], 
+input[type="url"],
+textarea {
+    width: 100%;
+    box-sizing: border-box; /* Include padding/border in the element's total width */
+}
 
-        .btn-secondary {
-            background-color: #e0e0e0;
-            color: #333;
-            flex: 1;
-        }
+/* Fix for the small select boxes/inputs */
+input, select, textarea {
+    padding: 0.9rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px; 
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    background-color: #f9f9f9;
+}
 
-        .btn-secondary:hover {
-            background-color: #c8c8c8;
-        }
-        
-        .btn-edit-profile {
-            background-color: #007367;
-            color: #fff;
-            padding: 0.6rem 1.2rem;
-        }
+input:focus, select:focus, textarea:focus {
+    border-color: #007366;
+    box-shadow: 0 0 5px rgba(0, 115, 102, 0.3);
+    background-color: #fff;
+}
 
-        .btn-edit-profile:hover {
-             background-color: #005e53;
-        }
+/* --- Buttons --- */
+.btn {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.2s;
+    font-weight: 600;
+}
 
-        /* --- Responsive Design --- */
-        @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-            }
-            .sidebar {
-                width: 100%;
-                flex-direction: row;
-                justify-content: space-around;
-                align-items: center;
-                padding: 0.5rem;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            }
-            .profile-pic, .sidebar h3 {
-                display: none;
-            }
-            .main-content {
-                padding: 1rem;
-            }
-            .content-header h1 {
-                font-size: 1.5rem;
-            }
-        }
+.btn-primary {
+    background-color: #007366;
+    color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 115, 102, 0.4);
+}
+
+.btn-primary:hover {
+    background-color: #005e53;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 10px rgba(0, 115, 102, 0.5);
+}
+
+.btn-secondary {
+    background-color: #F0E0C1; /* Use the warm beige for secondary */
+    color: #333;
+}
+
+.btn-secondary:hover {
+    background-color: #E0D0B1;
+    transform: translateY(-1px);
+}
+
+.btn-edit-profile {
+    padding: 0.8rem 1.5rem;
+    /* inherits primary style */
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end; /* Push buttons to the right */
+    gap: 1rem;
+    padding-top: 1rem;
+}
+.form-actions button {
+    flex: 0 1 auto; /* Don't force buttons to be full width */
+}
+
+/* --- Events Table & Filters --- */
+.events-table {
+    width: 100%;
+    background: #fff;
+    border-collapse: separate; /* Use separate for rounded corners on table */
+    border-spacing: 0;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.events-table th, .events-table td {
+    padding: 1rem 1.2rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.events-table th {
+    background-color: #007366; /* Teal header */
+    color: #fff;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.events-table tbody tr:hover {
+    background-color: #fafafa;
+    transition: background-color 0.2s;
+}
+
+.events-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    border: 1px solid #eee;
+}
+
+.events-filters .filter-group {
+    flex: 1;
+    min-width: 180px;
+}
+
+/* Status Badges */
+.flagged-status {
+    background-color: #d32f2f; /* Deep Red */
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: bold;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.unflag-requested-status {
+    background-color: #fbc02d; /* Amber/Yellow */
+    color: #333;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: bold;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 1024px) {
+    .profile-details {
+        grid-template-columns: 1fr; /* Stack profile details on smaller screens */
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        position: fixed; /* Fix the sidebar (now a top-bar) */
+        top: 0;
+        z-index: 1000;
+        height: auto;
+    }
+    .main-content {
+        padding: 1rem;
+        margin-top: 65px; /* Adjust for the fixed top bar */
+    }
+    .profile-pic, .sidebar h3 {
+        display: none;
+    }
+    .nav-links {
+        display: flex;
+        justify-content: space-around;
+        width: 70%;
+    }
+    .nav-links a {
+        padding: 0.5rem 0.5rem;
+        font-size: 0.9rem;
+        border-left: none;
+        border-bottom: 3px solid transparent;
+        text-align: center;
+    }
+    .nav-links a.active {
+        border-left: none;
+        border-bottom: 3px solid #F0E0C1;
+    }
+    .content-header h1 {
+        font-size: 1.8rem;
+    }
+    .content-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+    .content-header div {
+        margin-top: 15px;
+    }
+    .events-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .events-table th, .events-table td {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+    }
+    
+    /* Force forms to stack on small screens */
+    .form-container form {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    .form-group {
+        grid-column: 1 / -1;
+        margin-bottom: 1rem;
+    }
+    .form-actions {
+        justify-content: stretch; /* Stretch buttons on mobile */
+    }
+    .form-actions button {
+        flex: 1;
+    }
+}
+
+/* Print Styles for clean printing of reports */
+@media print {
+    .sidebar, .form-actions, .content-header div {
+        display: none !important;
+    }
+    body {
+        display: block;
+        background: none;
+    }
+    .main-content {
+        margin-top: 0;
+        padding: 0;
+    }
+    .profile-card, .events-table, .form-container {
+        box-shadow: none;
+        border: 1px solid #ccc;
+        margin-bottom: 20px;
+    }
+    .events-table th {
+        background-color: #eee !important;
+        -webkit-print-color-adjust: exact;
+    }
+}
+
     </style>
 </head>
 <body>
@@ -280,7 +466,8 @@
         <ul class="nav-links">
             <li><a id="profile-link" href="#" class="active">Profile</a></li>
             <li><a id="events-link" href="#">Events</a></li>
-           <li><a id="logout" href="#">Logout</a></li>
+            <li><a id="flagged-link" href="#">Flagged Events</a></li>
+            <li><a id="logout" href="#">Logout</a></li>
         </ul>
     </aside>
 
@@ -291,7 +478,6 @@
             <div class="profile-card">
                 <div class="profile-header">
                     <h2>Faculty Profile Information</h2>
-                <!-- <a id="edit-profile-link" href="#" class="btn btn-edit-profile">Edit Profile</a>-->   
                 </div>
              <div class="profile-details">
     <div class="detail-item" style="grid-column: 1 / -1; text-align:center;">
@@ -310,18 +496,68 @@
       <section id="events-section" class="hidden">
             <div class="content-header" style="display: flex; justify-content: space-between; align-items: center;">
                 <h1>My Events</h1>
-                <a id="add-event-link" href="#" class="btn btn-primary" style="flex: 0;">+ Add New Event</a>
+                <div style="display: flex; gap: 10px;">
+                    <a id="download-template-btn" href="#" class="btn btn-secondary">Download Template</a>
+                    <label class="btn btn-secondary" for="excel-input">Import Excel</label>
+                    <input type="file" id="excel-input" accept=".xlsx, .xls" style="display: none;">
+                    <a id="export-excel-btn" href="#" class="btn btn-primary">Export to Excel</a>
+                    <a id="add-event-link" href="#" class="btn btn-primary">+ Add New Event</a>
+                </div>
             </div>
-            <table class="events-table">
+            
+            <div class="events-filters">
+                <div class="filter-group">
+                    <label for="type-filter">Filter by Type</label>
+                    <select id="type-filter">
+                        <option value="">All Types</option>
+                        <option>Workshop</option>
+                        <option>Seminar</option>
+                        <option>FDP</option>
+                        <option>STP</option>
+                        <option>Competition</option>
+                        <option value="Others">Others</option> </select>
+                </div>
+                <div class="filter-group">
+                    <label for="days-filter">Filter by Days</label>
+                    <select id="days-filter">
+                        <option value="">All Durations</option>
+                        <option value="1">1 Day</option>
+                        <option value="2-7">2 - 7 Days</option>
+                        <option value="8-30">8 - 30 Days</option>
+                        <option value="31+">More than 30 Days</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="event-role-filter">Filter by Role</label>
+                    <select id="event-role-filter">
+                        <option value="">All Roles</option>
+                        <option>Organized</option>
+                        <option>Attended</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="from-date-filter">From Date</label>
+                    <input type="date" id="from-date-filter">
+                </div>
+                <div class="filter-group">
+                    <label for="to-date-filter">To Date</label>
+                    <input type="date" id="to-date-filter">
+                </div>
+            </div>
+            
+            <table class="events-table" id="events-table">
                 <thead>
                     <tr>
                         <th>Event Title</th>
                         <th>Type</th>
                         <th>From Date</th>
                         <th>To Date</th>
+                        <th>No. of Days</th>
                         <th>Participants</th>
                         <th>Organized/Attended</th>
+                        <th>Location</th>
                         <th>Attachments</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="events-table-body">
@@ -362,63 +598,181 @@
                   </div>
                 </form>
             </div> </section>
-            <section id="add-event-section" class="hidden">
-    <div class="form-container">
-        <h2>Add New Faculty Event</h2>
-        <form id="add-event-form">
-            <div class="form-group">
-                <label for="eventRole">Event Role</label>
-                <select id="eventRole" required>
-                    <option value="" disabled selected>Select Role</option>
-                    <option>Organized</option>
-                    <option>Attended</option>
-                </select>
+            
+        <section id="add-event-section" class="hidden">
+            <div class="form-container">
+                <h2>Add New Faculty Event</h2>
+                <form id="add-event-form">
+                    <div class="form-group">
+                        <label for="eventRole">Event Role</label>
+                        <select id="eventRole" required>
+                            <option value="" disabled selected>Select Role</option>
+                            <option>Organized</option>
+                            <option>Attended</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventType">Type of Event</label>
+                        <select id="eventType" required>
+                            <option value="" disabled selected>Select type</option>
+                            <option>Workshop</option>
+                            <option>Seminar</option>
+                            <option>FDP</option>
+                            <option>STP</option>
+                            <option>Competition</option>
+                            <option value="Others">Others</option> </select>
+                    </div>
+                    <div class="form-group hidden" id="customEventTypeGroup">
+                        <label for="customEventType">Specify Event Type</label>
+                        <input type="text" id="customEventType" placeholder="e.g., Guest Lecture" maxlength="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="eventTitle">Title of Event</label>
+                        <input type="text" id="eventTitle" placeholder="e.g., Workshop on AI" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fromDate">From Date</label>
+                        <input type="date" id="fromDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="toDate">To Date</label>
+                        <input type="date" id="toDate" required>
+                    </div>
+                    <div class="form-group" id="participants-group">
+                        <label for="participants">No. of Participants</label>
+                        <input type="number" id="participants" min="1" placeholder="e.g., 50" required>
+                    </div>
+                    <div class="form-group" id="location-group">
+                        <label for="eventLocation">Event Location</label>
+                        <input type="text" id="eventLocation" placeholder="e.g., University Hall" required>
+                    </div>
+                    <div class="form-group" id="attachments-group">
+                        <label for="attachments">Add Drive Link for Documents/Photos</label>
+                        <input type="url" id="attachments" placeholder="e.g., https://drive.google.com/..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="remarks">Event Output / Remarks</label>
+                        <textarea id="remarks" placeholder="Briefly describe the outcome of the event..."></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Submit Event</button>
+                        <button type="reset" class="btn btn-secondary">Clear</button>
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <label for="eventType">Type of Event</label>
-                <select id="eventType" required>
-                    <option value="" disabled selected>Select type</option>
-                    <option>Workshop</option>
-                    <option>Seminar</option>
-                    <option>FDP</option>
-                    <option>STP</option>
-                    <option>Competition</option>
-                    <option>Guest Lecture</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="eventTitle">Title of Event</label>
-                <input type="text" id="eventTitle" placeholder="e.g., Workshop on AI" required>
-            </div>
-            <div class="form-group">
-                <label for="fromDate">From Date</label>
-                <input type="date" id="fromDate" required>
-            </div>
-            <div class="form-group">
-                <label for="toDate">To Date</label>
-                <input type="date" id="toDate" required>
-            </div>
-            <div class="form-group">
-                <label for="participants">No. of Participants</label>
-                <input type="number" id="participants" min="1" placeholder="e.g., 50" required>
-            </div>
-            <div class="form-group">
-                <label for="photos">Upload Photos/Documents</label>
-                <input type="file" id="photos" accept="image/*,.pdf" multiple>
-            </div>
-            <div class="form-group">
-                <label for="remarks">Event Output / Remarks</label>
-                <textarea id="remarks" placeholder="Briefly describe the outcome of the event..."></textarea>
-            </div>
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Submit Event</button>
-                <button type="reset" class="btn btn-secondary">Clear</button>
-            </div>
-        </form>
-    </div>
         </section>
+
+        <section id="edit-event-section" class="hidden">
+            <div class="form-container">
+                <h2>Edit Faculty Event</h2>
+                <form id="edit-event-form">
+                    <input type="hidden" id="edit-event-id-hidden">
+                    <div class="form-group">
+                        <label for="edit-eventRole">Event Role</label>
+                        <select id="edit-eventRole" required>
+                            <option>Organized</option>
+                            <option>Attended</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-eventType">Type of Event</label>
+                        <select id="edit-eventType" required>
+                            <option>Workshop</option>
+                            <option>Seminar</option>
+                            <option>FDP</option>
+                            <option>STP</option>
+                            <option>Competition</option>
+                            <option value="Others">Others</option> </select>
+                    </div>
+                    <div class="form-group hidden" id="editCustomEventTypeGroup">
+                        <label for="editCustomEventType">Specify Event Type</label>
+                        <input type="text" id="editCustomEventType" placeholder="e.g., Guest Lecture" maxlength="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-eventTitle">Title of Event</label>
+                        <input type="text" id="edit-eventTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-fromDate">From Date</label>
+                        <input type="date" id="edit-fromDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-toDate">To Date</label>
+                        <input type="date" id="edit-toDate" required>
+                    </div>
+                    <div class="form-group" id="edit-participants-group">
+                        <label for="edit-participants">No. of Participants</label>
+                        <input type="number" id="edit-participants" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-eventLocation">Event Location</label>
+                        <input type="text" id="edit-eventLocation" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-attachments">Add Drive Link for Documents/Photos</label>
+                        <input type="url" id="edit-attachments" placeholder="e.g., https://drive.google.com/..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-remarks">Event Output / Remarks</label>
+                        <textarea id="edit-remarks"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="button" class="btn btn-secondary" onclick="showSection('events-section')">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+        
+        <section id="flagged-events-section" class="hidden">
+            <div class="content-header">
+                <h1>My Flagged Events</h1>
+            </div>
+            <table class="events-table" id="flagged-events-table">
+                <thead>
+    <tr>
+        <th>Event Title</th>
+        <th>Type</th>
+        <th>From Date</th>
+        <th>Admin Comment</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+</thead>
+                <tbody id="flagged-events-table-body">
+                    </tbody>
+            </table>
+        </section>
+        
     </main>
-    <script src="js/supabaseClient.js" type="module"></script>
-    <script src="js/faculty.js" type="module"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="/js/supabaseClient.js" type="module"></script>
+    <script src="/js/faculty.js" type="module"></script>
+    <script>
+        // Global utility function to toggle sections
+        function showSection(sectionId) {
+            const sections = ['profile-section', 'events-section', 'edit-profile-section', 'settings-section', 'add-event-section', 'edit-event-section', 'flagged-events-section'];
+            sections.forEach(id => {
+                const section = document.getElementById(id);
+                if (section) {
+                    section.classList.add('hidden');
+                }
+            });
+            const activeSection = document.getElementById(sectionId);
+            if (activeSection) {
+                activeSection.classList.remove('hidden');
+            }
+
+            document.querySelectorAll('.nav-links a').forEach(navLink => navLink.classList.remove('active'));
+            if (sectionId.includes('profile')) {
+                document.getElementById('profile-link').classList.add('active');
+            } else if (sectionId === 'events-section') {
+                document.getElementById('events-link').classList.add('active');
+            } else if (sectionId === 'flagged-events-section') {
+                document.getElementById('flagged-link').classList.add('active');
+            }
+        }
+    </script>
 </body>
 </html>

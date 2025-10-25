@@ -4,284 +4,431 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Department Dashboard</title>
-    <style>
-        /* --- General & Layout --- */
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f4f7f6;
-            display: flex;
-            min-height: 100vh;
-        }
+<style>
+/* --- General & Layout --- */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Classy textured background using the warm beige */
+    background: radial-gradient(circle at top left, #F0E0C1, #E0D0B1);
+    display: flex;
+    min-height: 100vh;
+    color: #333;
+    transition: background-color 0.3s;
+}
 
-        .hidden {
-            display: none;
-        }
+.hidden {
+    display: none !important;
+}
 
-        /* --- Sidebar --- */
-        .sidebar {
-            width: 220px;
-            background-color: #005e53;
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            padding: 2rem 1rem;
-            flex-shrink: 0;
-        }
+/* --- Sidebar: The Foundation --- */
+.sidebar {
+    width: 250px; /* Slightly wider sidebar */
+    background-color: #007366; /* Primary Teal background */
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 0;
+    flex-shrink: 0;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+    transition: width 0.3s ease;
+}
 
-        .sidebar .profile-pic {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            margin: 0 auto 1rem;
-            background-image: url('https://via.placeholder.com/100/007367/FFFFFF?text=Dept'); /* Placeholder image */
-            background-size: cover;
-            background-position: center;
-            border: 3px solid #007367;
-        }
+/* Sidebar Profile (Not used in dept HTML, but keeping structure clean) */
+.sidebar .profile-pic { 
+    display: none; /* Hidden since department profile is not in sidebar */
+}
+.sidebar h3 {
+    display: none; /* Hidden since department profile is not in sidebar */
+}
 
-        .sidebar h3 {
-            margin-bottom: 2rem;
-            font-size: 1.2rem;
-            text-align: center;
-        }
+.nav-links {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+}
 
-        .nav-links {
-            list-style: none;
-            padding: 0;
-            width: 100%;
-        }
+.nav-links li {
+    margin: 0;
+    position: relative;
+}
 
-        .nav-links li {
-            margin: 0.5rem 0;
-        }
+.nav-links a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 1rem;
+    padding: 1rem 2rem; /* Generous padding */
+    border-left: 5px solid transparent; /* For active indicator */
+    display: block;
+    transition: background-color 0.3s, border-left 0.3s, color 0.3s;
+    cursor: pointer;
+    font-weight: 500;
+}
 
-        .nav-links a {
-            text-decoration: none;
-            color: #fff;
-            font-size: 1rem;
-            padding: 0.8rem 1rem;
-            border-radius: 6px;
-            display: block;
-            transition: background-color 0.3s;
-            cursor: pointer;
-        }
+.nav-links a:hover {
+    background-color: #008f7d; /* Lighter shade of teal on hover */
+}
 
-        .nav-links a:hover,
-        .nav-links a.active {
-            background-color: #007367;
-        }
+.nav-links a.active {
+    background-color: #005e53; /* Darker shade of teal for active tab */
+    border-left: 5px solid #F0E0C1; /* Highlighting active tab */
+    color: #F0E0C1;
+    font-weight: 700;
+}
 
-        /* --- Main Content --- */
-        .main-content {
-            flex: 1;
-            padding: 2rem;
-            overflow-y: auto;
-        }
+/* Notification badge style */
+.notification-badge {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    background-color: #f44336;
+    color: white;
+    border-radius: 50%;
+    padding: 3px 8px; /* Slightly larger padding */
+    font-size: 0.75rem;
+    font-weight: bold;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    z-index: 10;
+    line-height: 1;
+    min-width: 15px;
+    text-align: center;
+}
 
-        .content-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
+/* --- Main Content Area --- */
+.main-content {
+    flex: 1;
+    padding: 2rem 3rem; /* More horizontal padding */
+    overflow-y: auto;
+    background-color: #fff; /* White base for content area */
+}
 
-        .content-header h1 {
-            font-size: 2rem;
-            color: #333;
-            margin: 0;
-        }
-        
-        /* --- Profile Card (Dashboard) --- */
-        .profile-card {
-            background: #fff;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-            margin: 0 auto;
-        }
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 1rem;
+}
 
-        .profile-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 1.5rem;
-        }
+.content-header h1 {
+    font-size: 2.2rem;
+    color: #007366; /* Main heading in primary color */
+    margin: 0;
+    font-weight: 300;
+}
 
-        .profile-header h2 {
-            color: #007367;
-            margin: 0;
-        }
+.content-header div {
+    display: flex;
+    gap: 10px; /* Space between action buttons */
+}
 
-        .profile-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-        }
+/* --- Cards (Profile, Forms) --- */
+.profile-card,
+.form-container {
+    background: #fff;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Deeper shadow for elevation */
+    max-width: 900px;
+    margin: 0 auto 2rem;
+    border-top: 5px solid #007366; /* Accent line at the top */
+    transition: transform 0.3s;
+}
 
-        .detail-item {
-            background-color: #f7f7f7;
-            padding: 1rem;
-            border-radius: 8px;
-        }
+.profile-card:hover,
+.form-container:hover {
+    transform: translateY(-3px);
+}
 
-        .detail-item strong {
-            display: block;
-            color: #555;
-            margin-bottom: 0.3rem;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-        }
-        
-        /* --- Events Table --- */
-        .events-table {
-            width: 100%;
-            background: #fff;
-            border-collapse: collapse;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
+/* --- Profile Card Layout --- */
+.profile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+}
 
-        .events-table th, .events-table td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-        }
+.profile-header h2 {
+    color: #007366;
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 600;
+}
 
-        .events-table th {
-            background-color: #fafafa;
-            font-weight: 600;
-            color: #555;
-        }
+.profile-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Adjusted grid columns */
+    gap: 1.5rem;
+}
 
-        .events-table tbody tr:hover {
-          background-color: #e8f5e9;
-        }
+.detail-item {
+    font-size: 1.05rem;
+    padding: 1rem;
+    border-radius: 8px;
+    background-color: #f7f7f7; /* Light background for detail items */
+    transition: background-color 0.3s;
+}
+.detail-item:hover {
+    background-color: #F0E0C1; /* Warm beige highlight on hover */
+}
 
-        /* --- Form Container (for Add/Edit/Settings) --- */
-        .form-container {
-            background: #fff;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-            width: 100%;
-            max-width: 550px;
-            margin: 2rem auto;
-        }
+.detail-item strong {
+    display: block;
+    color: #555;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
 
-        .form-container h2 {
-            margin-top: 0;
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
-            text-align: center;
-            color: #007367;
-        }
+/* --- Form Container Specifics --- */
+.form-container {
+    max-width: 700px;
+}
 
-        .form-group {
-            margin-bottom: 1rem;
-        }
+.form-container h2 {
+    color: #007366;
+    margin-bottom: 2rem;
+    font-weight: 300;
+    border-bottom: 1px solid #F0E0C1;
+    padding-bottom: 0.5rem;
+}
 
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: #333;
-        }
+.form-group {
+    margin-bottom: 1.5rem;
+}
 
-        input, select, textarea {
-            width: 100%;
-            padding: 0.7rem;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            outline: none;
-            box-sizing: border-box;
-        }
-        
-        input:focus, select:focus, textarea:focus {
-            border-color: #007367;
-        }
+label {
+    display: block;
+    margin-bottom: 0.6rem;
+    font-weight: 600;
+    color: #444;
+}
 
-        textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
+input, select, textarea {
+    padding: 0.9rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    background-color: #f9f9f9;
+}
 
-        .form-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
+input:focus, select:focus, textarea:focus {
+    border-color: #007366;
+    box-shadow: 0 0 5px rgba(0, 115, 102, 0.3);
+    background-color: #fff;
+}
 
-        /* --- Buttons --- */
-        .btn {
-            padding: 0.8rem;
-            font-size: 1rem;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            text-decoration: none;
-            text-align: center;
-            transition: background-color 0.3s ease;
-        }
-        
-        .btn-primary {
-            background-color: #007367;
-            color: #fff;
-            flex: 1;
-        }
-        
-        .btn-primary:hover {
-            background-color: #005e53;
-        }
+textarea {
+    min-height: 100px; /* Slightly taller text area */
+}
 
-        .btn-secondary {
-            background-color: #e0e0e0;
-            color: #333;
-            flex: 1;
-        }
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
 
-        .btn-secondary:hover {
-            background-color: #c8c8c8;
-        }
+/* --- Buttons --- */
+.btn {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.2s;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+}
 
-        /* --- Responsive Design --- */
-        @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-            }
-            .sidebar {
-                width: 100%;
-                flex-direction: row;
-                justify-content: space-around;
-                align-items: center;
-                padding: 0.5rem;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            }
-            .profile-pic, .sidebar h3 {
-                display: none;
-            }
-            .main-content {
-                padding: 1rem;
-            }
-            .content-header h1 {
-                font-size: 1.5rem;
-            }
-            .event-list-container {
-                flex-direction: column;
-            }
-        }
-    </style>
+.btn-primary {
+    background-color: #007366;
+    color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 115, 102, 0.4);
+}
+
+.btn-primary:hover {
+    background-color: #005e53;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 10px rgba(0, 115, 102, 0.5);
+}
+
+.btn-secondary {
+    background-color: #F0E0C1; /* Use the warm beige for secondary */
+    color: #333;
+    border: 1px solid #E0D0B1;
+}
+
+.btn-secondary:hover {
+    background-color: #E0D0B1;
+    transform: translateY(-1px);
+}
+
+/* --- Events Table & Filters --- */
+.events-table {
+    width: 100%;
+    background: #fff;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.events-table th, .events-table td {
+    padding: 1rem 1.2rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.events-table th {
+    background-color: #007366; /* Teal header */
+    color: #fff;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    vertical-align: middle;
+}
+
+.events-table tbody tr:hover {
+    background-color: #f4fcfb; /* Very light teal/green on hover */
+    transition: background-color 0.2s;
+}
+
+.events-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.event-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    border: 1px solid #eee;
+}
+
+.event-filters .filter-group {
+    flex: 1;
+    min-width: 180px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Status Badges */
+.flagged-status {
+    background-color: #d32f2f; /* Deep Red */
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: bold;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.unflag-requested-status {
+    background-color: #fbc02d; /* Amber/Yellow */
+    color: #333;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: bold;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 1024px) {
+    .content-header div {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+    .content-header .btn {
+        margin-top: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        position: fixed;
+        top: 0;
+        z-index: 1000;
+        height: auto;
+    }
+    .main-content {
+        padding: 1rem;
+        margin-top: 65px; /* Adjust for the fixed top bar */
+    }
+    .nav-links {
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+    }
+    .nav-links a {
+        padding: 0.5rem 0.5rem;
+        font-size: 0.9rem;
+        border-left: none;
+        border-bottom: 3px solid transparent;
+        text-align: center;
+    }
+    .nav-links a.active {
+        border-left: none;
+        border-bottom: 3px solid #F0E0C1;
+    }
+    
+    .content-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .content-header h1 {
+        font-size: 1.8rem;
+    }
+    .content-header div {
+        margin-top: 15px;
+        width: 100%;
+        justify-content: space-between;
+    }
+    .content-header .btn {
+        flex: 1 1 auto;
+        margin-right: 0 !important;
+        margin-bottom: 5px;
+    }
+    .event-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .events-table th, .events-table td {
+        padding: 0.6rem;
+        font-size: 0.85rem;
+    }
+}
+</style>
+
 </head>
 <body>
     <aside class="sidebar">
         <ul class="nav-links">
             <li><a id="organized-link" onclick="showSection('organized-events-section', this)" class="active">Organized Events</a></li>
             <li><a id="profile-link" onclick="showSection('profile-section', this)">Details</a></li>
+            <li><a id="flagged-link" onclick="showSection('flagged-events-section', this)">Flagged Events</a></li>
             <li><a href="/index.html">Logout</a></li>
         </ul>
     </aside>
@@ -290,17 +437,67 @@
         <section id="organized-events-section">
             <div class="content-header">
                 <h1>Department Events</h1>
-                <a id="add-event-link" onclick="showSection('add-event-section', this)" class="btn btn-primary" style="flex: 0;">+ Add Department Event</a>
+              <div>
+  <a id="export-excel-btn" href="#" class="btn btn-primary" style="flex: 0; margin-right: 10px;">Export to Excel</a>
+  <a id="download-template-btn" href="#" class="btn btn-primary" style="flex: 0; margin-right: 10px;">Download Template</a>
+  <input type="file" id="import-excel-input" accept=".xlsx, .xls" style="display: none;">
+  <a id="import-excel-btn" href="#" class="btn btn-primary" style="flex: 0; margin-right: 10px;">Import from Excel</a>
+  <a id="add-event-link" onclick="showSection('add-event-section', this)" class="btn btn-primary" style="flex: 0;">+ Add Department Event</a>
+</div>
+
             </div>
-            <table class="events-table">
+            
+            <div class="event-filters">
+                <div class="filter-group">
+                    <label for="type-filter">Filter by Type</label>
+                    <select id="type-filter">
+                        <option value="">All Types</option>
+                        <option>Workshop</option>
+                        <option>Seminar</option>
+                        <option>Conference</option>
+                        <option>Competition</option>
+                        <option>FDP</option>
+                        <option>STP</option>
+                        <option>Hackathon</option>
+                        <option>Guest lecture</option>
+                        <option>Technical talk</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="days-filter">Filter by Days</label>
+                    <select id="days-filter">
+                        <option value="">All Durations</option>
+                        <option value="1">1 Day</option>
+                        <option value="2-7">2 - 7 Days</option>
+                        <option value="8-30">8 - 30 Days</option>
+                        <option value="31+">More than 30 Days</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="from-date-filter">From Date</label>
+                    <input type="date" id="from-date-filter">
+                </div>
+                <div class="filter-group">
+                    <label for="to-date-filter">To Date</label>
+                    <input type="date" id="to-date-filter">
+                </div>
+            </div>
+
+            <table class="events-table" id="organized-events-table">
                 <thead>
                     <tr>
                         <th>Event Title</th>
                         <th>Type</th>
+                        <th>Coordinator</th>
                         <th>From Date</th>
                         <th>To Date</th>
+                        <th>No. of Days</th>
                         <th>Participants</th>
-                        <th>Images</th>
+                        <th>Location</th>
+                        <th>Event Output</th>
+                        <th>Attachments</th>
+                        <th>Certificates</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="organized-list">
@@ -318,7 +515,7 @@
                     </div>
                     <div class="form-group">
                         <label for="organized-type">Type</label>
-                        <select id="organized-type">
+                        <select id="organized-type" required>
                             <option>Workshop</option>
                             <option>Seminar</option>
                             <option>Conference</option>
@@ -326,15 +523,26 @@
                             <option>FDP</option>
                             <option>STP</option>
                             <option>Hackathon</option>
+                            <option>Guest lecture</option>
+                            <option>Technical talk</option>
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="organized-coordinator-name">Coordinator/Convenor Name</label>
+                        <input type="text" id="organized-coordinator-name" placeholder="e.g., Jane Doe" required>
                     </div>
                     <div class="form-group"><label for="organized-from">From Date</label><input type="date" id="organized-from" required></div>
                     <div class="form-group"><label for="organized-to">To Date</label><input type="date" id="organized-to" required></div>
                     <div class="form-group"><label for="organized-participants">No. of Participants</label><input type="number" id="organized-participants" min="1" placeholder="e.g., 100"></div>
-                    <div class="form-group"><label for="organized-output">Event Output</label><textarea id="organized-output" placeholder="Describe the outcome..."></textarea></div>
+                    <div class="form-group"><label for="organized-location">Location</label><input type="text" id="organized-location" placeholder="e.g., Main Auditorium" required></div>
+                    <div class="form-group"><label for="organized-output">Remarks/ Event Output</label><textarea id="organized-output" placeholder="Describe the outcome..." required></textarea></div>
                     <div class="form-group">
-                        <label for="organized-photos">Upload Photos (up to 10 images)</label>
-                        <input type="file" id="organized-photos" accept="image/*" multiple>
+                        <label for="organized-attachments">Attachments Drive Link</label>
+                        <input type="url" id="organized-attachments" placeholder="e.g., https://drive.google.com/..." required>
+                    </div>
+                     <div class="form-group">
+                        <label for="organized-certificate-link">Participant Certificate Drive Link (Optional)</label>
+                        <input type="url" id="organized-certificate-link" placeholder="e.g., https://drive.google.com/..." >
                     </div>
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary">Add Event</button>
@@ -342,6 +550,74 @@
                     </div>
                 </form>
             </div>
+        </section>
+
+        <section id="edit-event-section" class="hidden">
+             <div class="form-container">
+                <h2>Edit Organized Event</h2>
+                <form id="edit-organized-form">
+                    <input type="hidden" id="edit-organized-id">
+                    <div class="form-group">
+                        <label for="edit-organized-title">Event Title</label>
+                        <input type="text" id="edit-organized-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-organized-type">Type</label>
+                        <select id="edit-organized-type" required>
+                            <option>Workshop</option>
+                            <option>Seminar</option>
+                            <option>Conference</option>
+                            <option>Competition</option>
+                            <option>FDP</option>
+                            <option>STP</option>
+                            <option>Hackathon</option>
+                            <option>Guest lecture</option>
+                            <option>Technical talk</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-organized-coordinator-name">Coordinator/Convenor Name</label>
+                        <input type="text" id="edit-organized-coordinator-name" required>
+                    </div>
+                    <div class="form-group"><label for="edit-organized-from">From Date</label><input type="date" id="edit-organized-from" required></div>
+                    <div class="form-group"><label for="edit-organized-to">To Date</label><input type="date" id="edit-organized-to" required></div>
+                    <div class="form-group"><label for="edit-organized-participants">No. of Participants</label><input type="number" id="edit-organized-participants" min="1"></div>
+                    <div class="form-group"><label for="edit-organized-location">Location</label><input type="text" id="edit-organized-location" required></div>
+                    <div class="form-group"><label for="edit-organized-output">Remarks/ Event Output</label><textarea id="edit-organized-output" required></textarea></div>
+                    <div class="form-group">
+                        <label for="edit-organized-attachments">Attachments Drive Link</label>
+                        <input type="url" id="edit-organized-attachments" placeholder="e.g., https://drive.google.com/..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-organized-certificate-link">Participant Certificate Drive Link (Optional)</label>
+                        <input type="url" id="edit-organized-certificate-link">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="button" class="btn btn-secondary" onclick="showSection('organized-events-section')">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+        
+        <section id="flagged-events-section" class="hidden">
+            <div class="content-header">
+                <h1>My Flagged Events</h1>
+            </div>
+            <table class="events-table" id="flagged-events-table">
+                <thead>
+    <tr>
+        <th>Event Title</th>
+        <th>Type</th>
+        <th>From Date</th>
+        <th>Admin Comment</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+</thead>
+                <tbody id="flagged-events-table-body">
+                    </tbody>
+            </table>
         </section>
         
         <section id="profile-section" class="hidden">
@@ -361,16 +637,16 @@
         </section>
     </main>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="js/supabaseClient.js" type="module"></script>
     <script src="js/department.js" type="module"></script>
     <script>
         const sections = [
             'organized-events-section', 
             'add-event-section',
-            'profile-section'
+            'edit-event-section',
+            'profile-section',
+            'flagged-events-section'
         ];
 
         function showSection(sectionId, clickedLink) {
