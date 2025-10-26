@@ -292,7 +292,7 @@ input:focus, select:focus {
         <label>Faculty ID</label>
         <input type="text" id="signup-facultyId" required />
         <label>Mobile Number</label>
-        <input type="text" id="signup-mobile" required />
+        <input type="tel" id="signup-mobile" required minlength="10" maxlength="10" />
         <label>Email</label>
         <input type="email" id="signup-email" required />
         <label>Password</label>
@@ -308,8 +308,6 @@ input:focus, select:focus {
 
         <div class="form-group"><label for="signup-profilePic">Upload Profile Picture</label><input type="file" id="signup-profilePic" accept="image/*"></div>
         <div class="form-group"><label for="signup-gender">Gender </label><select id="signup-gender" required><option value="" disabled selected>Select Gender</option><option>Male</option><option>Female</option><option>Other</option></select></div>
-        <div class="form-group"><label for="signup-school">School </label><select id="signup-school" required><option value="" disabled selected>Select School</option><option>GITAM School of Technology</option><option>GITAM School of Science</option><option>GITAM School of Business</option><option>GITAM School of Law</option><option>GITAM School of Pharmacy</option><option>GITAM School of Architecture</option><option>GITAM Institute of Medical Science & Research (GIMSR)</option></select></div>
-        <div class="form-group"><label for="signup-department">Department Name </label><input type="text" id="signup-department" required></div>
         <button type="submit" class="login-btn">Register</button>
         <p class="signup-link">Already have an account? <a href="#" id="show-login">Login</a></p>
       </form>

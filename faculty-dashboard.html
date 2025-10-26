@@ -130,7 +130,8 @@ body {
 
 /* --- Profile Card Layout --- */
 .profile-card {
-    max-width: 900px;
+    /* MODIFICATION: Adjusted max-width for better display of four items */
+    max-width: 700px;
 }
 .profile-header {
     display: flex;
@@ -483,12 +484,15 @@ input:focus, select:focus, textarea:focus {
     <div class="detail-item" style="grid-column: 1 / -1; text-align:center;">
         <img id="profile-pic-main" src="https://via.placeholder.com/120" alt="Profile Picture" style="width:120px;height:120px;border-radius:50%;border:3px solid #007367;object-fit:cover;">
     </div>
+    
     <div class="detail-item"><strong>Full Name</strong><span id="faculty-name-display"></span></div>
     <div class="detail-item"><strong>Faculty ID</strong><span id="faculty-id-display"></span></div>
     <div class="detail-item"><strong>Gender</strong><span id="faculty-gender-display"></span></div>
-    <div class="detail-item"><strong>School</strong><span id="faculty-school-display"></span></div>
-    <div class="detail-item"><strong>Department</strong><span id="faculty-department-display"></span></div>
     <div class="detail-item"><strong>Email</strong><span id="faculty-email-display"></span></div>
+    
+    <div class="detail-item hidden"><strong>School</strong><span id="faculty-school-display"></span></div>
+    <div class="detail-item hidden"><strong>Department</strong><span id="faculty-department-display"></span></div>
+
 </div>
             </div>
         </section>
