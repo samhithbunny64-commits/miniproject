@@ -325,6 +325,27 @@
         background-color: var(--color-accent-light);
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
+    
+    /* NEW: Approval Button Styles */
+    .btn-approve {
+        background-color: #4CAF50 !important; /* Green for 'Approve' */
+        color: var(--color-white) !important;
+        font-weight: 600;
+    }
+    .btn-approve:hover {
+        background-color: #45A049 !important; /* Darker Green on hover */
+        transform: translateY(-1px);
+    }
+    .btn-approved {
+        background-color: #BDBDBD !important; /* Gray for 'Approved' */
+        color: #616161 !important;
+        cursor: not-allowed !important;
+        box-shadow: none !important;
+    }
+    .btn-approved:hover {
+        background-color: #BDBDBD !important; /* No change on hover */
+        transform: none !important;
+    }
 
     /* --- FORMS (Add/Edit Faculty/Department) --- */
     .form-container {
@@ -613,7 +634,7 @@
                 <th>Mobile No</th>
                 <th>Gender</th>
                 <th>Email</th>
-                <th>Actions</th>
+                <th>Actions</th> 
               </tr>
             </thead>
             <tbody>
@@ -667,49 +688,10 @@
         </div>
       </section>
 
-      <section id="edit-faculty-section" class="data-section hidden">
-        <h2>Edit Faculty Account</h2>
-        <div class="form-container">
-            <form id="edit-faculty-form">
-                <input type="hidden" id="edit-faculty-id-hidden">
-                <div class="form-group"><label for="edit-faculty-name">Full Name</label><input type="text" id="edit-faculty-name" required></div>
-                <div class="form-group"><label for="edit-faculty-id-input">Faculty ID</label><input type="text" id="edit-faculty-id-input" required></div>
-                <div class="form-group"><label for="edit-faculty-email">Email</label><input type="email" id="edit-faculty-email" required></div>
-                <div class="form-group"><label for="edit-faculty-mobile">Mobile No</label><input type="tel" id="edit-faculty-mobile" required></div>
-                <div class="form-group"><label for="edit-faculty-gender">Gender</label>
-                    <select id="edit-faculty-gender" required>
-                        <option value="">Select Gender</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-                <div class="form-group"><label for="edit-faculty-school">School</label>
-                    <select id="edit-faculty-school" required>
-                        <option value="">Select School</option>
-                        <option value="GITAM School of Technology">GITAM School of Technology</option>
-                        <option value="GITAM School of Sciences">GITAM School of Sciences</option>
-                        <option value="GITAM School of Business">GITAM School of Business</option>
-                        <option value="GITAM School of Law">GITAM School of Law</option>
-                        <option value="GITAM School of Pharmacy">GITAM School of Pharmacy</option>
-                        <option value="GITAM School of Architecture">GITAM School of Architecture</option>
-                        <option value="GITAM Institute of Medical Science & Research (GIMSR)">GITAM Institute of Medical Science & Research (GIMSR)</option>
-                    </select>
-                </div>
-                <div class="form-group"><label for="edit-faculty-department">Department</label><input type="text" id="edit-faculty-department" required></div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                    <button type="button" class="btn btn-secondary" onclick="showSection('faculty-section')">Cancel</button>
-                </div>
-            </form>
-        </div>
-      </section>
-
       <section id="department-section" class="data-section hidden">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <h2>Department Account</h2>
-         <!-- <button class="add-btn" id="add-department-btn">+ Add Department Account</button>-->
-        </div>
+         </div>
         <div class="table-container">
           <table id="department-table">
             <thead>
@@ -829,6 +811,14 @@
                         <option>Attended</option>
                     </select>
                 </div>
+                <div class="filter-group">
+    <label for="source-filter">Filter by Event Source</label>
+    <select id="source-filter">
+        <option value="">All Sources</option>
+        <option value="Faculty">Faculty</option>
+        <option value="Department">Department</option>
+    </select>
+</div>
                 <div class="filter-group">
     <label for="academic-year-filter">Filter by Academic Year</label>
     <select id="academic-year-filter">

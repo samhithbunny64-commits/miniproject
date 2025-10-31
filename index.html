@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Event Organizer | Login & Signup</title>
   <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
     /* General Body and Layout */
 body {
@@ -257,7 +258,7 @@ input:focus, select:focus {
   <label>Password</label>
   <div class="password-container">
     <input type="password" id="faculty-password" required />
-    <span class="toggle-password">👁️</span>
+    <span class="toggle-password"><i class="fa-solid fa-eye"></i></span>
   </div>
   <button type="submit" class="login-btn">Login</button>
   <p class="signup-link">No account? <a href="#" id="show-signup">Sign up</a></p> 
@@ -269,7 +270,7 @@ input:focus, select:focus {
   <label>Security Pin</label>
   <div class="password-container">
     <input type="password" id="department-pin" required />
-    <span class="toggle-password">👁️</span>
+    <span class="toggle-password"><i class="fa-solid fa-eye"></i></span>
   </div>
   <button type="submit" class="login-btn">Login</button>
 </form>
@@ -280,7 +281,7 @@ input:focus, select:focus {
   <label>Password</label>
   <div class="password-container">
     <input type="password" id="admin-password" required />
-    <span class="toggle-password">👁️</span>
+    <span class="toggle-password"><i class="fa-solid fa-eye"></i></span>
   </div>
  <button type="submit" class="login-btn">Login</button>
 </form>
@@ -298,12 +299,12 @@ input:focus, select:focus {
         <label>Password</label>
         <div class="password-container">
           <input type="password" id="signup-password" required />
-          <span class="toggle-password">👁️</span>
+          <span class="toggle-password"><i class="fa-solid fa-eye"></i></span>
         </div>
         <label>Confirm Password</label>
         <div class="password-container">
           <input type="password" id="signup-confirm" required />
-          <span class="toggle-password">👁️</span>
+          <span class="toggle-password"><i class="fa-solid fa-eye"></i></span>
         </div>
 
         <div class="form-group"><label for="signup-profilePic">Upload Profile Picture</label><input type="file" id="signup-profilePic" accept="image/*"></div>
@@ -339,7 +340,6 @@ input:focus, select:focus {
     <p class="signup-link"><a href="#" id="back-to-admin-login">Back to Login</a></p>
   </form>
 </main>
-    </main>
   </div>
 
   <script src="js/auth.js" type="module"></script>
@@ -359,5 +359,6 @@ input:focus, select:focus {
         user-select: none;
     }
   </style>
+
 </body>
 </html>

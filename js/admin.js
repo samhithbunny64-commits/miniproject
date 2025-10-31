@@ -42,7 +42,8 @@ async function loadFaculty() {
   if (!tableBody) return;
   tableBody.innerHTML = "<tr><td colspan='8'>Loading faculty...</td></tr>";
 
-  const { data, error } = await supabase.from("faculty").select("id, name, faculty_id, school, department, mobile, gender, email").order("name", { ascending: true }).limit(200);
+  // MODIFIED: Added 'is_approved' to the select statement
+  const { data, error } = await supabase.from("faculty").select("id, name, faculty_id, school, department, mobile, gender, email, is_approved").order("name", { ascending: true }).limit(200);
   if (error) {
     tableBody.innerHTML = `<tr><td colspan='8'>Error: ${error.message}</td></tr>`;
     return;
@@ -55,6 +56,12 @@ async function loadFaculty() {
   }
 
   data.forEach(f => {
+    // NEW LOGIC FOR APPROVAL BUTTON
+    const isApproved = f.is_approved;
+    const buttonText = isApproved ? "Approved" : "Approve";
+    const buttonClass = isApproved ? "btn btn-secondary btn-approved" : "btn btn-primary btn-approve";
+    const isDisabled = isApproved ? "disabled" : "";
+    
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>${f.name || ""}</td>
@@ -64,7 +71,7 @@ async function loadFaculty() {
       <td>${f.mobile || "N/A"}</td>
       <td>${f.gender || "N/A"}</td>
       <td>${f.email || ""}</td>
-      <td><button class="btn btn-secondary btn-edit" data-id="${f.id}" data-type="faculty">Edit</button></td>
+      <td><button class="${buttonClass}" data-id="${f.id}" ${isDisabled}>${buttonText}</button></td>
     `;
     tableBody.appendChild(row);
   });
@@ -177,6 +184,8 @@ async function loadEvents() {
   document.getElementById("to-date-filter").addEventListener("change", filterAndRenderEvents);
   // --- NEW CHANGE: Add event listener for the new filter ---
   document.getElementById("academic-year-filter").addEventListener("change", filterAndRenderEvents);
+  // --- NEW CHANGE: Add event listener for the event source filter ---
+  document.getElementById("source-filter").addEventListener("change", filterAndRenderEvents);
 }
 
 // -----------------------------
@@ -262,8 +271,9 @@ function filterAndRenderEvents() {
     const roleFilter = document.getElementById("role-filter").value;
     const fromDate = document.getElementById("from-date-filter").value;
     const toDate = document.getElementById("to-date-filter").value;
-    // --- NEW CHANGE: Get the value from the new filter ---
     const academicYearFilter = document.getElementById("academic-year-filter").value;
+    // --- NEW CHANGE: Get the value from the new filter ---
+    const sourceFilter = document.getElementById("source-filter").value; 
 
     const filteredEvents = allEvents.filter(event => {
         const numDays = calculateDays(event.from_date, event.to_date);
@@ -272,9 +282,11 @@ function filterAndRenderEvents() {
         const matchesRole = !roleFilter || event.event_role === roleFilter;
         const matchesDates = (!fromDate || (event.from_date && event.from_date >= fromDate)) && (!toDate || (event.to_date && event.to_date <= toDate));
         
-        // --- NEW CHANGE: Add the academic year condition ---
         const eventAcademicYear = getAcademicYear(event.from_date);
         const matchesAcademicYear = !academicYearFilter || eventAcademicYear === academicYearFilter;
+        // --- NEW CHANGE: Add the event source condition ---
+        const matchesSource = !sourceFilter || event.eventSource === sourceFilter;
+
 
         let matchesDays = true;
         if (daysFilter) {
@@ -288,8 +300,8 @@ function filterAndRenderEvents() {
                 matchesDays = numDays > 30;
             }
         }
-        // --- NEW CHANGE: Include the academic year match in the final check ---
-        return matchesType && matchesRole && matchesDates && matchesDays && matchesAcademicYear;
+        // --- NEW CHANGE: Include the event source match in the final check ---
+        return matchesType && matchesRole && matchesDates && matchesDays && matchesAcademicYear && matchesSource;
     });
 
     renderEventsTable(filteredEvents);
@@ -516,6 +528,27 @@ async function unflagEvent(flaggedEventId, originalEventId, sourceTable) {
     loadEvents();
 }
 
+// -----------------------------
+// Approve Faculty Functionality
+// -----------------------------
+async function approveFaculty(facultyId) {
+    if (!confirm("Are you sure you want to approve this faculty account?")) {
+        return;
+    }
+
+    const { error } = await supabase
+        .from('faculty')
+        .update({ is_approved: true })
+        .eq('id', facultyId);
+
+    if (error) {
+        alert("Failed to approve faculty: " + error.message);
+    } else {
+        alert("Faculty approved successfully!");
+        loadFaculty(); // Reload the faculty list to update the button status
+    }
+}
+
 
 // -----------------------------
 // Delete Event Functionality
@@ -625,6 +658,9 @@ document.addEventListener('click', (e) => {
         if (url) {
             window.open(url, '_blank').focus();
         }
+    } else if (e.target.classList.contains('btn-approve')) {
+        const id = e.target.dataset.id;
+        approveFaculty(id);
     }
     
     const sectionId = sections[e.target.id];

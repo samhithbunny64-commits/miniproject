@@ -118,13 +118,24 @@ document.addEventListener('DOMContentLoaded', () => {
     if (facultyLoginForm) facultyLoginForm.classList.remove('hidden');
     if (facultyToggle) facultyToggle.classList.add('active');
 
-    // Password toggle functionality
+    // --- CORRECTED: Password toggle functionality for Font Awesome ---
     document.querySelectorAll('.toggle-password').forEach(toggle => {
       toggle.addEventListener('click', () => {
-        const passwordInput = toggle.previousElementSibling;
+        const container = toggle.closest('.password-container');
+    const passwordInput = container ? container.querySelector('input') : null;
+    const icon = toggle.querySelector('i');
         const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        
         passwordInput.setAttribute('type', type);
-        toggle.textContent = type === 'password' ? '👁️' : '🔒';
+        
+        // Toggle the Font Awesome icon class
+        if (type === 'password') {
+          icon.classList.remove('fa-eye-slash');
+          icon.classList.add('fa-eye');
+        } else {
+          icon.classList.remove('fa-eye');
+          icon.classList.add('fa-eye-slash');
+        }
       });
     });
 });
@@ -151,6 +162,13 @@ if (signupForm) {
         alert("Please fill all required fields.");
         return;
     }
+
+    // --- GITAM Email Validation ---
+    if (!email.toLowerCase().endsWith("@gitam.edu")) {
+        alert("please enter your gitam faculty mail id");
+        return; // Stop the submission
+    }
+    // --- END ---
 
     if (password !== confirm) {
         alert("Passwords do not match.");
